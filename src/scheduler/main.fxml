@@ -20,168 +20,146 @@
             fx:controller="scheduler.Controller">
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <tabs>
-                <Tab text="Appointments">
-                    <content>
-                        <VBox>
-                            <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn prefWidth="60.0" text="ID">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="idProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Title">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="titleProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Description">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="descriptionProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Location">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="locationProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Contact">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="contactIdProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Type">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="typeProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="Start">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="startProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="150.0" text="End">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="endProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn prefWidth="60.0" text="Cust ID">
-                                        <cellValueFactory>
-                                            <PropertyValueFactory property="customerIdProp"/>
-                                        </cellValueFactory>
-                                    </TableColumn>
-                                </columns>
-                                <VBox.margin>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                </VBox.margin>
-                            </TableView>
-                        </VBox>
-                    </content>
-                </Tab>
-                <Tab text="Customers">
-                    <content>
-                        <VBox>
-                            <children>
-                                <TableView fx:id="customerTable" VBox.vgrow="ALWAYS">
-                                    <columns>
-                                        <TableColumn prefWidth="60.0" text="ID">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="idProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn prefWidth="236.0" text="Name">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="nameProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn prefWidth="180.0" text="Phone">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="phoneProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn prefWidth="316.0" text="Address">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="addressProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn prefWidth="100.0" text="Postal Code">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="postalCodeProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn prefWidth="208.0" text="Division">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="divisionProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                        <TableColumn text="Country">
-                                            <cellValueFactory>
-                                                <PropertyValueFactory property="countryProp"/>
-                                            </cellValueFactory>
-                                        </TableColumn>
-                                    </columns>
-                                    <VBox.margin>
-                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                    </VBox.margin>
-                                </TableView>
-                            </children>
-                        </VBox>
-                    </content>
-                </Tab>
-            </tabs>
+            <Tab text="Appointments">
+                <VBox>
+                    <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn prefWidth="60.0" text="ID">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="idProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Title">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="titleProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Description">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="descriptionProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Location">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="locationProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Contact">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="contactIdProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Type">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="typeProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="Start">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="startProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="150.0" text="End">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="endProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="60.0" text="Cust ID">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="customerIdProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                        </columns>
+                        <VBox.margin>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </VBox.margin>
+                    </TableView>
+                </VBox>
+            </Tab>
+            <Tab text="Customers">
+                <VBox>
+                    <TableView fx:id="customerTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn prefWidth="60.0" text="ID">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="idProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="236.0" text="Name">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="nameProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="180.0" text="Phone">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="phoneProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="316.0" text="Address">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="addressProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="100.0" text="Postal Code">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="postalCodeProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="208.0" text="Division">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="divisionProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn text="Country">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="countryProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                        </columns>
+                        <VBox.margin>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </VBox.margin>
+                    </TableView>
+                </VBox>
+            </Tab>
         </TabPane>
     </center>
     <bottom>
         <VBox spacing="10.0" BorderPane.alignment="CENTER">
-            <children>
-                <HBox prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
-                    <children>
-                        <RadioButton mnemonicParsing="false" text="Month">
-                            <HBox.margin>
-                                <Insets top="5.0"/>
-                            </HBox.margin>
-                        </RadioButton>
-                        <RadioButton mnemonicParsing="false" text="Week">
-                            <HBox.margin>
-                                <Insets top="5.0"/>
-                            </HBox.margin>
-                        </RadioButton>
-                        <DatePicker/>
-                    </children>
-                    <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0"/>
-                    </VBox.margin>
-                </HBox>
-            </children>
+            <HBox prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                <VBox.margin>
+                    <Insets bottom="10.0" left="10.0" right="10.0"/>
+                </VBox.margin>
+                <RadioButton mnemonicParsing="false" text="Month">
+                    <HBox.margin>
+                        <Insets top="5.0"/>
+                    </HBox.margin>
+                </RadioButton>
+                <RadioButton mnemonicParsing="false" text="Week">
+                    <HBox.margin>
+                        <Insets top="5.0"/>
+                    </HBox.margin>
+                </RadioButton>
+                <DatePicker/>
+            </HBox>
         </VBox>
     </bottom>
     <top>
         <MenuBar BorderPane.alignment="CENTER">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Log off"/>
-                        <MenuItem mnemonicParsing="false" text="Close"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="New">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Edit Selected"/>
-                        <MenuItem mnemonicParsing="false" text="Delete Selected"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
-                    </items>
-                </Menu>
-            </menus>
+            <Menu mnemonicParsing="false" text="File">
+                <MenuItem mnemonicParsing="false" text="Log off"/>
+                <MenuItem mnemonicParsing="false" text="Close"/>
+            </Menu>
+            <Menu mnemonicParsing="false" text="New">
+                <MenuItem mnemonicParsing="false" text="Action 1"/>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+                <MenuItem mnemonicParsing="false" text="Edit Selected"/>
+                <MenuItem mnemonicParsing="false" text="Delete Selected"/>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+                <MenuItem mnemonicParsing="false" text="About"/>
+            </Menu>
         </MenuBar>
     </top>
 </BorderPane>

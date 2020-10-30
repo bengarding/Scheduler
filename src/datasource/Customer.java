@@ -2,8 +2,6 @@ package datasource;
 
 import javafx.beans.property.SimpleStringProperty;
 
-import java.util.Date;
-
 public class Customer {
 
     private int id;
@@ -11,10 +9,6 @@ public class Customer {
     private String address;
     private String postalCode;
     private String phone;
-    private Date createDate;
-    private String createdBy;
-    private Date lastUpdate;
-    private String lastUpdatedBy;
     private int divisionId;
     private String country;
 
@@ -91,38 +85,6 @@ public class Customer {
     public void setPhone(String phone) {
         this.phone = phone;
         this.phoneProp = new SimpleStringProperty(phone);
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public String getLastUpdatedBy() {
-        return lastUpdatedBy;
-    }
-
-    public void setLastUpdatedBy(String lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
     }
 
     public int getDivisionId() {

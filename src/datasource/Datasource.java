@@ -88,10 +88,6 @@ public class Datasource {
                 appointment.setType(results.getString(Appointment.INDEX_TYPE));
                 appointment.setStart(results.getTimestamp(Appointment.INDEX_START));
                 appointment.setEnd(results.getTimestamp(Appointment.INDEX_END));
-                appointment.setCreateDate(results.getTimestamp(Appointment.INDEX_CREATE_DATE));
-                appointment.setCreatedBy(results.getString(Appointment.INDEX_CREATED_BY));
-                appointment.setLastUpdate(results.getTimestamp(Appointment.INDEX_LAST_UPDATE));
-                appointment.setLastUpdatedBy(results.getString(Appointment.INDEX_LAST_UPDATED_BY));
                 appointment.setCustomerId(results.getInt(Appointment.INDEX_CUSTOMER_ID));
                 appointment.setUserId(results.getInt(Appointment.INDEX_USER_ID));
                 appointment.setContactId(results.getInt(Appointment.INDEX_CONTACT_ID));
@@ -125,10 +121,6 @@ public class Datasource {
                 customer.setAddress(results.getString(Customer.INDEX_ADDRESS));
                 customer.setPostalCode(results.getString(Customer.INDEX_POSTAL_CODE));
                 customer.setPhone(results.getString(Customer.INDEX_PHONE));
-                customer.setCreateDate(results.getTimestamp(Customer.INDEX_CREATE_DATE));
-                customer.setCreatedBy(results.getString(Customer.INDEX_CREATED_BY));
-                customer.setLastUpdate(results.getTimestamp(Customer.INDEX_LAST_UPDATE));
-                customer.setLastUpdatedBy(results.getString(Customer.INDEX_LAST_UPDATED_BY));
                 customer.setDivisionId(results.getInt(Customer.INDEX_DIVISION_ID));
 
                 customerList.add(customer);
