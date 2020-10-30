@@ -6,4 +6,5 @@ module Scheduler {
     requires java.naming;
 
     opens scheduler;
+    opens datasource to javafx.base;
 }
