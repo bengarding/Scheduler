@@ -9,42 +9,33 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <top>
-      <Label text="Scheduler" BorderPane.alignment="CENTER_LEFT">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-         <BorderPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </BorderPane.margin>
-      </Label>
-   </top>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-                     <children>
-                         <Label alignment="CENTER_RIGHT" maxHeight="25.0" prefHeight="25.0" text="Username"/>
-                        <Label alignment="CENTER_RIGHT" maxHeight="25.0" prefHeight="25.0" text="Password" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <TextField maxHeight="25.0" prefHeight="25.0">
-                           <VBox.margin>
-                              <Insets right="30.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <PasswordField maxHeight="25.0" prefHeight="25.0">
-                           <VBox.margin>
-                              <Insets right="30.0" />
-                           </VBox.margin>
-                        </PasswordField>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0"
+            prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="scheduler.LoginController">
+    <center>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <HBox VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox alignment="CENTER_RIGHT" prefWidth="100.0" spacing="10.0">
+                            <children>
+                                <Label fx:id="username" alignment="CENTER_RIGHT" prefHeight="25.0" text="Username"/>
+                                <Label fx:id="password" alignment="CENTER_RIGHT" prefHeight="25.0" text="Password"/>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <TextField fx:id="usernameField" prefHeight="25.0">
+                                    <VBox.margin>
+                                        <Insets right="30.0"/>
+                                    </VBox.margin>
+                                </TextField>
+                                <PasswordField fx:id="passwordField" prefHeight="25.0">
+                                    <VBox.margin>
+                                        <Insets right="30.0"/>
+                                    </VBox.margin>
+                                </PasswordField>
                      </children>
                       <HBox.margin>
                           <Insets left="10.0"/>
@@ -52,29 +43,32 @@
                   </VBox>
                </children>
                 <VBox.margin>
-                    <Insets top="20.0"/>
+                    <Insets top="25.0"/>
                 </VBox.margin>
             </HBox>
-             <HBox alignment="CENTER">
-                 <children>
-                     <Label alignment="TOP_CENTER" text="Incorrect username or password" textFill="RED">
-                         <HBox.margin>
-                             <Insets bottom="10.0" top="10.0"/>
-                         </HBox.margin>
-                     </Label>
-                 </children>
-             </HBox>
-             <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="NEVER">
-                 <children>
-                     <Label text="Location: ">
-                         <HBox.margin>
-                             <Insets left="10.0"/>
-                         </HBox.margin>
-                     </Label>
-                     <Region HBox.hgrow="ALWAYS"/>
-                     <Button mnemonicParsing="false" prefWidth="60.0" text="Exit"/>
-                     <Button mnemonicParsing="false" prefWidth="60.0" text="Submit"/>
-                 </children>
+                <HBox alignment="CENTER" prefHeight="10.0" VBox.vgrow="NEVER">
+                    <children>
+                        <Label fx:id="error" alignment="TOP_CENTER" text="Incorrect username or password" textFill="RED"
+                               visible="false">
+                            <HBox.margin>
+                                <Insets bottom="10.0" top="5.0"/>
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox alignment="BOTTOM_RIGHT" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="loc" text="Location: ">
+                            <HBox.margin>
+                                <Insets left="10.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exit" prefWidth="60.0"
+                                text="Exit"/>
+                        <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submit" prefWidth="60.0"
+                                text="Submit"/>
+                    </children>
                <VBox.margin>
                   <Insets bottom="10.0" right="10.0" />
                </VBox.margin>

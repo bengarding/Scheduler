@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 public class Appointment {
 
@@ -12,8 +13,8 @@ public class Appointment {
     private String description;
     private String location;
     private String type;
-    private Timestamp start;
-    private Timestamp end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private int customerId;
     private int userId;
     private int contactId;
@@ -26,7 +27,7 @@ public class Appointment {
     private SimpleStringProperty startProp;
     private SimpleStringProperty endProp;
     private SimpleStringProperty customerIdProp;
-    private SimpleStringProperty contactIdProp;
+    private SimpleStringProperty contactProp;
 
     public static final String COLUMN_ID = "Appointment_ID";
     public static final String COLUMN_TITLE = "Title";
@@ -103,21 +104,21 @@ public class Appointment {
         this.typeProp = new SimpleStringProperty(type);
     }
 
-    public Timestamp getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
     public void setStart(Timestamp start) {
-        this.start = start;
+        this.start = start.toLocalDateTime();
         this.startProp = new SimpleStringProperty(new SimpleDateFormat("MM-dd-yy   HH:mm").format(start));
     }
 
-    public Timestamp getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
     public void setEnd(Timestamp end) {
-        this.end = end;
+        this.end = end.toLocalDateTime();
         this.endProp = new SimpleStringProperty(new SimpleDateFormat("MM-dd-yy   HH:mm").format(end));
     }
 
@@ -144,7 +145,7 @@ public class Appointment {
 
     public void setContactId(int contactId) {
         this.contactId = contactId;
-        this.contactIdProp = new SimpleStringProperty(String.valueOf(contactId));
+        this.contactProp = new SimpleStringProperty(Datasource.getContactName(contactId));
     }
 
     public String getIdProp() {
@@ -211,11 +212,11 @@ public class Appointment {
         return customerIdProp;
     }
 
-    public String getContactIdProp() {
-        return contactIdProp.get();
+    public String getContactProp() {
+        return contactProp.get();
     }
 
-    public SimpleStringProperty contactIdPropProperty() {
-        return contactIdProp;
+    public SimpleStringProperty contactPropProperty() {
+        return contactProp;
     }
 }

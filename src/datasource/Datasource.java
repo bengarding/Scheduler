@@ -141,6 +141,21 @@ public class Datasource {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_USERS)) {
 
+//            StringBuilder sb = new StringBuilder("INSERT INTO users (Create_Date) VALUES ('");
+//            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//            LocalDateTime localDateTime = LocalDateTime.now();
+//            sb.append(timestamp).append("');");
+//            System.out.println(sb.toString());
+////            statement.execute(sb.toString());
+
+//            Locale locale = Locale.getDefault();
+//            System.out.println(locale.toString());
+//            System.out.println(locale.getLanguage());
+//            System.out.println(Locale.ENGLISH.toString());
+//            if (locale.getLanguage().equals(Locale.ENGLISH)){
+//                System.out.println("english");
+//            }
+
             while (results.next()) {
                 User user = new User();
                 user.setId(results.getInt(User.INDEX_ID));
@@ -186,6 +201,17 @@ public class Datasource {
             return result.getString(1);
         } catch (SQLException e) {
             System.out.println("Failed to extract country name: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String getContactName(int id) {
+        try (Statement statement = conn.createStatement();
+             ResultSet result = statement.executeQuery("SELECT Contact_Name FROM contacts WHERE Contact_ID=" + id)) {
+            result.next();
+            return result.getString(1);
+        } catch (SQLException e) {
+            System.out.println("Failed to extract contact name: " + e.getMessage());
             return null;
         }
     }
