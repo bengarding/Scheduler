@@ -3,24 +3,23 @@ package scheduler;
 import datasource.Appointment;
 import datasource.Customer;
 import datasource.Datasource;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class MainController {
 
-    private ObservableList<Customer> customers = FXCollections.observableArrayList(Datasource.getAllCustomers());
-    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Datasource.getAllAppointments()));
+    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Datasource.appointmentList));
 
     @FXML
     private TableView<Appointment> appointmentTable;
@@ -36,15 +35,21 @@ public class MainController {
     private Tab appointmentsTab;
     @FXML
     private Tab customerTab;
+    @FXML
+    private MenuBar menuBar;
 
     public void initialize() {
         datePicker.setValue(LocalDate.of(2020, 6, 1));
-        ObservableList<Customer> customers = FXCollections.observableArrayList(Datasource.getAllCustomers());
-
         radioSelected();
-        customerTable.setItems(customers);
+        customerTable.setItems(Datasource.customerList);
+        customerTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
+    /**
+     * Updates the appointment table based on the value of the date picker. Displays a month view if monthRadio is selected,
+     * and week view if weekRadio is selected.
+     */
     @FXML
     private void radioSelected() {
         if (monthRadio.isSelected()) {
@@ -89,6 +94,9 @@ public class MainController {
         appointmentTable.setItems(appointmentsFiltered);
     }
 
+    /**
+     * Hides the radio buttons and date picker if the customer tab is selected, and shows them if the appointments tab is selected.
+     */
     @FXML
     private void tabSelected() {
         try {
@@ -102,7 +110,71 @@ public class MainController {
                 datePicker.setVisible(true);
             }
         } catch (NullPointerException e) {
-            //Not sure why it's trowing a NullPointerException. Everything works as intended
+            // Not sure why it's throwing a NullPointerException. Everything works as intended
         }
     }
+
+    /**
+     * Returns to the login window and closes the main window
+     */
+    @FXML
+    private void logOff() {
+        try {
+            newWindow("login", "Scheduler");
+            Stage oldStage = (Stage) menuBar.getScene().getWindow();
+            oldStage.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Exits the application
+     */
+    @FXML
+    private void exit() {
+        Platform.exit();
+    }
+
+    /**
+     * Calls newWindow to open the customer window
+     */
+    @FXML
+    private void newCustomer() {
+        try {
+            newWindow("customer", "New Customer");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Calls newWindow to open the appointment window
+     */
+    @FXML
+    private void newAppointment() {
+        try {
+            newWindow("appointment", "New Appointment");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Opens a new window
+     *
+     * @param fxml  The fxml file name to be opened. Concatenated with ".fxml"
+     * @param title The title to set on the new window
+     * @throws IOException
+     */
+    private void newWindow(String fxml, String title) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource(fxml + ".fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.setScene(scene);
+        stage.show();
+    }
+
 }

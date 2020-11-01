@@ -1,13 +1,11 @@
 package datasource;
 
-public class Contact {
-
+public class Division {
     private int id;
     private String name;
-    private String email;
 
-    public static final String CONTACT_NAME = "Contact_Name";
-    public static final String CONTACT_ID = "Contact_ID";
+    public static final String DIVISION_ID = "Division_ID";
+    public static final String DIVISION_NAME = "Division";
 
     public int getId() {
         return id;
@@ -23,13 +21,5 @@ public class Contact {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 }

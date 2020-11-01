@@ -3,6 +3,7 @@ package datasource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import scheduler.Main;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,6 +25,10 @@ public class Datasource {
     public static final String TABLE_COUNTRIES = "countries";
 
     public static List<User> userList = new ArrayList<>();
+    public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
+    public static ObservableList<Country> countryList = FXCollections.observableArrayList();
+    public static ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
+    public static ObservableList<Division> divisionList = FXCollections.observableArrayList();
 
     private static Connection conn;
 
@@ -34,10 +39,12 @@ public class Datasource {
      */
     public static boolean open() {
         MysqlDataSource datasource = getMySQLDataSource();
-
         try {
             conn = datasource.getConnection();
+            getAllCustomers();
             getAllUsers();
+            getAllCountries();
+            getAllAppointments();
             return true;
         } catch (SQLException e) {
             System.out.println("Failed loading database: " + e.getMessage());
@@ -52,7 +59,7 @@ public class Datasource {
      */
     private static MysqlDataSource getMySQLDataSource() {
         Properties props = new Properties();
-        FileInputStream fis = null;
+        FileInputStream fis;
         MysqlDataSource mysqlDS = null;
         try {
             fis = new FileInputStream("src/res/db.properties");
@@ -68,16 +75,12 @@ public class Datasource {
     }
 
     /**
-     * Pulls all appointments from the database
-     *
-     * @return ObservableList of all appointments
+     * Extracts all appointments from the database and stores them into a static ObservableArrayList
      */
-    public static ObservableList<Appointment> getAllAppointments() {
+    public static void getAllAppointments() {
 
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_APPOINTMENTS)) {
-
-            ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
 
             while (results.next()) {
                 Appointment appointment = new Appointment();
@@ -94,25 +97,19 @@ public class Datasource {
 
                 appointmentList.add(appointment);
             }
-            return appointmentList;
 
         } catch (SQLException e) {
             System.out.println("Creating appointmentList failed: " + e.getMessage());
-            return null;
         }
     }
 
     /**
-     * Pulls all customers from the database
-     *
-     * @return ObservableList of all customers
+     * Extracts all customers from the database and stores them into a static ObservableArrayList
      */
-    public static ObservableList<Customer> getAllCustomers() {
+    public static void getAllCustomers() {
 
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_CUSTOMERS)) {
-
-            ObservableList<Customer> customerList = FXCollections.observableArrayList();
 
             while (results.next()) {
                 Customer customer = new Customer();
@@ -125,36 +122,38 @@ public class Datasource {
 
                 customerList.add(customer);
             }
-            return customerList;
 
         } catch (SQLException e) {
             System.out.println("Creating customerList failed: " + e.getMessage());
-            return null;
         }
     }
 
     /**
-     * Pulls all users from the database and stores them in a static ArrayList
+     * Extracts all the countries from the database and stores them into a static ObservableArrayList
+     */
+    public static void getAllCountries() {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_COUNTRIES)) {
+
+            while (results.next()) {
+                Country country = new Country();
+                country.setId(results.getInt(Country.COUNTRY_ID));
+                country.setName(results.getString(Country.COUNTRY_NAME));
+
+                countryList.add(country);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to extract countries: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Extracts all users from the database and stores them into a static ArrayList
      */
     public static void getAllUsers() {
 
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_USERS)) {
-
-//            StringBuilder sb = new StringBuilder("INSERT INTO users (Create_Date) VALUES ('");
-//            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//            LocalDateTime localDateTime = LocalDateTime.now();
-//            sb.append(timestamp).append("');");
-//            System.out.println(sb.toString());
-////            statement.execute(sb.toString());
-
-//            Locale locale = Locale.getDefault();
-//            System.out.println(locale.toString());
-//            System.out.println(locale.getLanguage());
-//            System.out.println(Locale.ENGLISH.toString());
-//            if (locale.getLanguage().equals(Locale.ENGLISH)){
-//                System.out.println("english");
-//            }
 
             while (results.next()) {
                 User user = new User();
@@ -171,14 +170,15 @@ public class Datasource {
     }
 
     /**
-     * Extracts the division name from the first_level_division table in the database
+     * Extracts a single division name from the first_level_division table in the database
      *
-     * @param id the division_id to search with
-     * @return String of the division name
+     * @param id The division ID to search with
+     * @return The division name
      */
     public static String getDivisionName(int id) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT Division FROM " + TABLE_DIVISIONS + " WHERE Division_ID=" + id)) {
+             ResultSet result = statement.executeQuery("SELECT " + Division.DIVISION_NAME + " FROM " + TABLE_DIVISIONS +
+                     " WHERE " + Division.DIVISION_ID + "=" + id)) {
             result.next();
             return result.getString(1);
         } catch (SQLException e) {
@@ -188,15 +188,35 @@ public class Datasource {
     }
 
     /**
-     * Extracts the country name from the country table in the database
+     * Extracts a single division id from the first_level_division table in the database
      *
-     * @param id the division_id to search with
-     * @return String of the country name
+     * @param name The division name to search with
+     * @return The division ID
+     */
+    public static int getDivisionId(String name) {
+        try (Statement statement = conn.createStatement();
+             ResultSet result = statement.executeQuery("SELECT " + Division.DIVISION_ID + " FROM " + TABLE_DIVISIONS +
+                     " WHERE " + Division.DIVISION_NAME + "='" + name + "'")) {
+            result.next();
+            return result.getInt(1);
+        } catch (SQLException e) {
+            System.out.println("Failed to extract division id: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Extracts a single country name from the country table in the database
+     *
+     * @param id The division ID to search with
+     * @return The country name
      */
     public static String getCountryName(int id) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT Country FROM " + TABLE_COUNTRIES + " country INNER JOIN " +
-                     TABLE_DIVISIONS + " division ON country.Country_ID = division.Country_ID WHERE division.Division_ID=" + id)) {
+             ResultSet result = statement.executeQuery("SELECT " + Country.COUNTRY_NAME + " FROM " + TABLE_COUNTRIES +
+                     " country INNER JOIN " + TABLE_DIVISIONS + " division ON country." + Country.COUNTRY_ID +
+                     " = division." + Country.COUNTRY_ID + " WHERE division." + Division.DIVISION_ID + "=" + id)) {
+
             result.next();
             return result.getString(1);
         } catch (SQLException e) {
@@ -205,9 +225,17 @@ public class Datasource {
         }
     }
 
+    /**
+     * Extracts a single contact name from the contact table in the database
+     *
+     * @param id The contact ED to be searched with
+     * @return The contact name
+     */
     public static String getContactName(int id) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT Contact_Name FROM contacts WHERE Contact_ID=" + id)) {
+             ResultSet result = statement.executeQuery("SELECT " + Contact.CONTACT_NAME + " FROM " +
+                     TABLE_CONTACTS + " WHERE " + Contact.CONTACT_ID + "=" + id)) {
+
             result.next();
             return result.getString(1);
         } catch (SQLException e) {
@@ -215,4 +243,50 @@ public class Datasource {
             return null;
         }
     }
+
+    /**
+     * Clears the current divisionList and then extracts all the divisions from the database for a specified country
+     * and stores them into a static ObservableArrayList
+     *
+     * @param country The country to be searched with
+     */
+    public static void getAllDivisions(String country) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT *  FROM " + TABLE_DIVISIONS +
+                     " WHERE " + Country.COUNTRY_ID + "=(SELECT " + Country.COUNTRY_ID + " FROM " + TABLE_COUNTRIES +
+                     " WHERE " + Country.COUNTRY_NAME + "='" + country + "')")) {
+            divisionList.clear();
+            while (results.next()) {
+                Division division = new Division();
+                division.setId(results.getInt(Division.DIVISION_ID));
+                division.setName(results.getString(Division.DIVISION_NAME));
+
+                divisionList.add(division);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Failed to extract divisions: " + e.getMessage());
+        }
+    }
+
+    public static boolean newCustomer(Customer customer) {
+        try (Statement statement = conn.createStatement()) {
+            String currentUser = Main.currentUser.getUserName();
+
+            statement.execute("INSERT INTO " + TABLE_CUSTOMERS + " (" + Customer.COLUMN_ID + ", " + Customer.COLUMN_NAME +
+                    ", " + Customer.COLUMN_ADDRESS + ", " + Customer.COLUMN_POSTAL_CODE + ", " + Customer.COLUMN_PHONE + ", " +
+                    Customer.COLUMN_CREATED_BY + ", " + Customer.COLUMN_LAST_UPDATED_BY + ", " + Customer.COLUMN_DIVISION_ID +
+                    ") VALUES(" + customer.getId() + ", '" + customer.getName() + "', '" + customer.getAddress() + "', '" +
+                    customer.getPostalCode() + "', '" + customer.getPhone() + "', '" + currentUser + "', '" + currentUser +
+                    "', " + customer.getDivisionId() + ")");
+
+            customerList.clear();
+            getAllCustomers();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to create new customer: " + e.getMessage());
+            return false;
+        }
+    }
+
 }

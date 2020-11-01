@@ -16,6 +16,7 @@ public class Main extends Application {
     public static ResourceBundle language = ResourceBundle.getBundle("res/lang", Locale.getDefault());
     public static User currentUser;
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
@@ -24,8 +25,7 @@ public class Main extends Application {
         } else {
             primaryStage.setTitle("Scheduler");
         }
-//        primaryStage.setScene(new Scene(root, 400, 160));
-        primaryStage.setScene(new Scene(root, 1200, 800));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

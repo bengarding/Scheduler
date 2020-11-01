@@ -3,10 +3,8 @@ package scheduler;
 import datasource.Datasource;
 import datasource.User;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -61,32 +59,35 @@ public class LoginController {
 
     /**
      * When the submit button is pressed, the entered username and password are checked against the userList in the
-     * Datasource class. If a match is found, main.fxml is loaded and login.fxml is hidden. Otherwise, an error message
-     * is displayed
-     *
-     * @param event The submit button being pressed
+     * Datasource class. If a match is found, the user data is saved in the Main class and the main window is opened.
+     * Otherwise, an error message is displayed
      */
     @FXML
-    private void submit(ActionEvent event) {
+    private void submit() {
         for (User user : Datasource.userList) {
             if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
                 Main.currentUser = user;
+
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader();
                     fxmlLoader.setLocation(getClass().getResource("main.fxml"));
-                    Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
+                    Scene scene = new Scene(fxmlLoader.load());
                     Stage stage = new Stage();
                     stage.setTitle("Scheduler");
                     stage.setScene(scene);
                     stage.show();
-                    ((Node) (event.getSource())).getScene().getWindow().hide();
+
+                    Stage oldStage = (Stage) submitButton.getScene().getWindow();
+                    oldStage.close();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 break;
+            } else {
+                error.setVisible(true);
             }
         }
-        error.setVisible(true);
     }
 
     /**

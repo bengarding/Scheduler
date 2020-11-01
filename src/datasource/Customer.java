@@ -42,6 +42,19 @@ public class Customer {
     public static final int INDEX_LAST_UPDATED_BY = 9;
     public static final int INDEX_DIVISION_ID = 10;
 
+    public Customer(int id, String name, String address, String postalCode, String phone, int divisionId, String country) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.postalCode = postalCode;
+        this.phone = phone;
+        this.divisionId = divisionId;
+        this.country = country;
+    }
+
+    public Customer() {
+    }
+
     public int getId() {
         return id;
     }
