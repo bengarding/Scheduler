@@ -1,8 +1,8 @@
 package scheduler;
 
-import datasource.Appointment;
-import datasource.Customer;
-import datasource.Datasource;
+import data.Appointment;
+import data.Customer;
+import data.Data;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class MainController {
 
-    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Datasource.appointmentList));
+    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Data.appointmentList));
 
     @FXML
     private TableView<Appointment> appointmentTable;
@@ -41,9 +41,21 @@ public class MainController {
     public void initialize() {
         datePicker.setValue(LocalDate.of(2020, 6, 1));
         radioSelected();
-        customerTable.setItems(Datasource.customerList);
-        customerTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        customerTable.setItems(Data.customerList);
+        customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        customerTab.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                monthRadio.setVisible(false);
+                weekRadio.setVisible(false);
+                datePicker.setVisible(false);
+            } else {
+                monthRadio.setVisible(true);
+                weekRadio.setVisible(true);
+                datePicker.setVisible(true);
+            }
+        });
     }
 
     /**
@@ -95,26 +107,6 @@ public class MainController {
     }
 
     /**
-     * Hides the radio buttons and date picker if the customer tab is selected, and shows them if the appointments tab is selected.
-     */
-    @FXML
-    private void tabSelected() {
-        try {
-            if (customerTab.isSelected()) {
-                monthRadio.setVisible(false);
-                weekRadio.setVisible(false);
-                datePicker.setVisible(false);
-            } else if (appointmentsTab.isSelected()) {
-                monthRadio.setVisible(true);
-                weekRadio.setVisible(true);
-                datePicker.setVisible(true);
-            }
-        } catch (NullPointerException e) {
-            // Not sure why it's throwing a NullPointerException. Everything works as intended
-        }
-    }
-
-    /**
      * Returns to the login window and closes the main window
      */
     @FXML
@@ -160,14 +152,60 @@ public class MainController {
         }
     }
 
+    @FXML
+    private void edit() {
+        if (customerTab.isSelected()) {
+            Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+            if (selectedCustomer == null) {
+                Main.showAlert(Alert.AlertType.INFORMATION, "No Customer Selected", "Please select a customer to edit");
+            } else {
+                try {
+                    CustomerController controller = newWindow("customer", "Edit Customer").getController();
+                    controller.editCustomer(selectedCustomer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+
+        }
+    }
+
+    /**
+     * Deletes a customer or appointment based on the tab that is selected. This method first checks if there are any customers
+     * associated with an appointment before deletion, and displays an error if there are any associations
+     */
+    @FXML
+    private void delete() {
+        if (customerTab.isSelected()) {
+            Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+            if (selectedCustomer == null) {
+                Main.showAlert(Alert.AlertType.INFORMATION, "No Customer Selected", "Please select a customer to delete");
+            } else if (!Data.safeToDelete(selectedCustomer.getId())) {
+                Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting this " +
+                        "customer. Please make sure that the customer is not associated with any appointments before deleting.");
+            } else {
+                if (Data.deleteCustomer(selectedCustomer)) {
+                    Main.showAlert(Alert.AlertType.INFORMATION, "Customer Deleted", "Customer successfully deleted " +
+                            "from the database");
+                } else {
+                    Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting from the database");
+                }
+            }
+        } else {
+
+        }
+    }
+
     /**
      * Opens a new window
      *
      * @param fxml  The fxml file name to be opened. Concatenated with ".fxml"
      * @param title The title to set on the new window
-     * @throws IOException
+     * @return The FXMLLoader that was created
+     * @throws IOException Loading the new scene from the FXMLLoader
      */
-    private void newWindow(String fxml, String title) throws IOException {
+    private FXMLLoader newWindow(String fxml, String title) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource(fxml + ".fxml"));
         Scene scene = new Scene(fxmlLoader.load());
@@ -175,6 +213,9 @@ public class MainController {
         stage.setTitle(title);
         stage.setScene(scene);
         stage.show();
+
+        return fxmlLoader;
     }
+
 
 }

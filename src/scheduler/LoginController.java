@@ -1,7 +1,7 @@
 package scheduler;
 
-import datasource.Datasource;
-import datasource.User;
+import data.Data;
+import data.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,11 +35,9 @@ public class LoginController {
     private PasswordField passwordField;
 
     /**
-     * Initialized the login window. If the Locale is set to French, everything is translated to French.
+     * Initialized the login window. If the Locale is set to French, everything is translated into French.
      */
     public void initialize() {
-        submitButton.setDefaultButton(true);
-        exitButton.setCancelButton(true);
 
         if (Locale.getDefault().getLanguage().equals("fr")) {
             username.setText(Main.language.getString("username"));
@@ -64,7 +62,7 @@ public class LoginController {
      */
     @FXML
     private void submit() {
-        for (User user : Datasource.userList) {
+        for (User user : Data.userList) {
             if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
                 Main.currentUser = user;
 

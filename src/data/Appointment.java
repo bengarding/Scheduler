@@ -1,4 +1,4 @@
-package datasource;
+package data;
 
 import javafx.beans.property.SimpleStringProperty;
 
@@ -145,7 +145,7 @@ public class Appointment {
 
     public void setContactId(int contactId) {
         this.contactId = contactId;
-        this.contactProp = new SimpleStringProperty(Datasource.getContactName(contactId));
+        this.contactProp = new SimpleStringProperty(Data.getContactName(contactId));
     }
 
     public String getIdProp() {

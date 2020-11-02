@@ -1,11 +1,12 @@
 package scheduler;
 
-import datasource.Datasource;
-import datasource.User;
+import data.Data;
+import data.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.util.Locale;
@@ -19,7 +20,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
         if (Locale.getDefault().getLanguage().equals("fr")) {
             primaryStage.setTitle(language.getString("scheduler"));
         } else {
@@ -31,8 +32,23 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        Datasource.open();
+        Data.open();
         launch(args);
+    }
+
+    /**
+     * Shows an alert
+     *
+     * @param type        The type of alert to show
+     * @param title       The title to display
+     * @param contentText The content text to display
+     */
+    public static void showAlert(Alert.AlertType type, String title, String contentText) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(contentText);
+        alert.showAndWait();
     }
 }
 

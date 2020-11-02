@@ -21,7 +21,7 @@
             fx:controller="scheduler.MainController">
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <Tab fx:id="appointmentsTab" closable="false" onSelectionChanged="#tabSelected" text="Appointments">
+            <Tab fx:id="appointmentsTab" closable="false" text="Appointments">
                 <VBox>
                     <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
                         <columns>
@@ -77,7 +77,7 @@
                     </TableView>
                 </VBox>
             </Tab>
-            <Tab fx:id="customerTab" closable="false" onSelectionChanged="#tabSelected" text="Customers">
+            <Tab fx:id="customerTab" closable="false" text="Customers">
                 <VBox>
                     <TableView fx:id="customerTable" VBox.vgrow="ALWAYS">
                         <columns>
@@ -163,8 +163,8 @@
                 </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
-                <MenuItem mnemonicParsing="false" text="Edit Selected"/>
-                <MenuItem mnemonicParsing="false" text="Delete Selected"/>
+                <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit Selected"/>
+                <MenuItem mnemonicParsing="false" onAction="#delete" text="Delete Selected"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" text="About"/>

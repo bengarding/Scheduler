@@ -1,4 +1,4 @@
-package datasource;
+package data;
 
 public class Division {
     private int id;

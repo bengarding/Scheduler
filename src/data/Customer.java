@@ -1,4 +1,4 @@
-package datasource;
+package data;
 
 import javafx.beans.property.SimpleStringProperty;
 
@@ -106,8 +106,8 @@ public class Customer {
 
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
-        this.divisionProp = new SimpleStringProperty(Datasource.getDivisionName(divisionId));
-        String country = Datasource.getCountryName(divisionId);
+        this.divisionProp = new SimpleStringProperty(Data.getDivisionName(divisionId));
+        String country = Data.getCountryName(divisionId);
         this.country = country;
         this.countryProp = new SimpleStringProperty(country);
     }

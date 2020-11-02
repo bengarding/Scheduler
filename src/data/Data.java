@@ -1,4 +1,4 @@
-package datasource;
+package data;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
@@ -11,11 +11,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class Datasource {
+public class Data {
 
     public static final String TABLE_APPOINTMENTS = "appointments";
     public static final String TABLE_USERS = "users";
@@ -289,4 +291,67 @@ public class Datasource {
         }
     }
 
+    /**
+     * Edits an existing customer in the database with new values. Clears the customerList and reloads it from the database
+     *
+     * @param customer The new customer information to be updated
+     * @return True if successful and false if not
+     */
+    public static boolean editCustomer(Customer customer) {
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("UPDATE " + TABLE_CUSTOMERS + " SET " + Customer.COLUMN_NAME + "='" + customer.getName() +
+                    "', " + Customer.COLUMN_ADDRESS + "='" + customer.getAddress() + "', " + Customer.COLUMN_POSTAL_CODE +
+                    "='" + customer.getPostalCode() + "', " + Customer.COLUMN_PHONE + "='" + customer.getPhone() + "', " +
+                    Customer.COLUMN_LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Customer.COLUMN_LAST_UPDATED_BY +
+                    "='" + Main.currentUser.getUserName() + "', " + Customer.COLUMN_DIVISION_ID + "="
+                    + customer.getDivisionId() + " WHERE " + Customer.COLUMN_ID + "=" + customer.getId());
+
+            customerList.clear();
+            getAllCustomers();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to edit customer: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an existing customer from the database. Clears the customerList and reloads it from the database
+     *
+     * @param customer The customer to be deleted
+     * @return True if successful and false if not
+     */
+    public static boolean deleteCustomer(Customer customer) {
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("DELETE FROM " + TABLE_CUSTOMERS + " WHERE " + Customer.COLUMN_ID + "=" + customer.getId());
+
+            customerList.clear();
+            getAllCustomers();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to delete customer: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Checks if any customer is related to an appointment
+     *
+     * @param customerID The customer ID to check against all appointments
+     * @return True if there are no matches and false if there are matches or there is an error
+     */
+    public static boolean safeToDelete(int customerID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + TABLE_APPOINTMENTS + " appts INNER JOIN " +
+                     TABLE_CUSTOMERS + " custs ON appts." + Customer.COLUMN_ID + " = custs." + Customer.COLUMN_ID +
+                     " WHERE custs." + Customer.COLUMN_ID + "=" + customerID)) {
+            results.next();
+            if (results.getInt(1) == 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to find match: " + e.getMessage());
+        }
+        return false;
+    }
 }
