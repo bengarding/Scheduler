@@ -4,10 +4,10 @@ public class Contact {
 
     private int id;
     private String name;
-    private String email;
 
-    public static final String CONTACT_NAME = "Contact_Name";
-    public static final String CONTACT_ID = "Contact_ID";
+    public static final String TABLE = "contacts";
+    public static final String NAME = "Contact_Name";
+    public static final String ID = "Contact_ID";
 
     public int getId() {
         return id;
@@ -25,11 +25,4 @@ public class Contact {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

@@ -2,20 +2,22 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
-            prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+            prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="scheduler.AppointmentController">
    <top>
       <Label text="Create New Appointment" BorderPane.alignment="TOP_LEFT">
          <font>
@@ -71,32 +73,101 @@
                </Label>
             </HBox>
             <HBox alignment="TOP_RIGHT">
-               <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Contact ID">
+               <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="User ID">
                   <HBox.margin>
                      <Insets/>
                   </HBox.margin>
                </Label>
             </HBox>
             <HBox alignment="TOP_RIGHT">
-               <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="User ID"/>
+               <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Contact"/>
             </HBox>
          </VBox>
-         <VBox prefHeight="200.0" prefWidth="170.0" spacing="30.0" HBox.hgrow="ALWAYS">
-            <TextField disable="true" editable="false" prefWidth="0.0">
+         <VBox prefHeight="200.0" prefWidth="170.0" HBox.hgrow="ALWAYS">
+            <TextField fx:id="idField" disable="true" editable="false" maxWidth="110.0">
                <VBox.margin>
-                  <Insets/>
+                  <Insets bottom="30.0"/>
                </VBox.margin>
             </TextField>
-            <ComboBox prefWidth="185.0">
+            <TextField fx:id="locationField"/>
+            <Label fx:id="locationError" text="Enter a location" textFill="RED" visible="false">
                <VBox.margin>
-                  <Insets/>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-            </ComboBox>
-            <DatePicker prefWidth="185.0"/>
-            <DatePicker prefWidth="185.0"/>
-            <ComboBox prefWidth="185.0"/>
-            <ComboBox prefWidth="185.0"/>
-            <ComboBox prefWidth="185.0"/>
+            </Label>
+            <DatePicker fx:id="startDatePicker" prefWidth="185.0"/>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+               <children>
+                  <Label fx:id="startDateError" text="Select a start date" textFill="RED" visible="false"/>
+                  <Label fx:id="startDateBeforeEndError" text="Cannot be after end date" textFill="RED"
+                         visible="false"/>
+               </children>
+            </GridPane>
+            <DatePicker fx:id="endDatePicker" prefWidth="185.0"/>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+               <children>
+                  <Label fx:id="endDateError" text="Select an end date" textFill="RED" visible="false"/>
+                  <Label fx:id="endDateAfterStartError" text="Cannot be before start date" textFill="RED"
+                         visible="false"/>
+               </children>
+            </GridPane>
+            <TextField fx:id="customerIDField" maxWidth="110.0"/>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+               <children>
+                  <Label fx:id="customerIDError" text="Enter a customer ID" textFill="RED" visible="false"/>
+                  <Label fx:id="customerIDExistsError" text="Customer ID does not exist" textFill="RED"
+                         visible="false"/>
+               </children>
+            </GridPane>
+            <TextField fx:id="userIDField" maxWidth="110.0"/>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+               <children>
+                  <Label fx:id="userIDError" text="Enter a user ID" textFill="RED" visible="false"/>
+                  <Label fx:id="UserIDExistsError" text="User ID does not exist" textFill="RED" visible="false"/>
+               </children>
+            </GridPane>
+            <ComboBox fx:id="contactBox" prefWidth="185.0"/>
+            <Label fx:id="contactError" text="Select a contact" textFill="RED" visible="false">
+               <VBox.margin>
+                  <Insets left="5.0" top="2.5"/>
+               </VBox.margin>
+            </Label>
          </VBox>
          <VBox prefHeight="200.0" prefWidth="100.0" spacing="30.0" HBox.hgrow="ALWAYS">
             <HBox.margin>
@@ -119,32 +190,81 @@
             </HBox>
          </VBox>
          <VBox prefHeight="200.0" prefWidth="170.0" HBox.hgrow="ALWAYS">
-            <TextField>
+            <TextField fx:id="titleField">
                <VBox.margin>
                   <Insets/>
                </VBox.margin>
             </TextField>
-            <Label text="Enter a title" textFill="RED" visible="false">
+            <Label fx:id="titleError" text="Enter a title" textFill="RED" visible="false">
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
             </Label>
-            <ChoiceBox prefWidth="185.0">
+            <TextField fx:id="typeField"/>
+            <Label fx:id="typeError" text="Enter a type" textFill="RED" visible="false">
                <VBox.margin>
-                  <Insets bottom="30.0"/>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-            </ChoiceBox>
-            <TextField>
+            </Label>
+            <TextField fx:id="startTimeField" maxWidth="110.0" promptText="24 Hour HH:MM">
                <VBox.margin>
-                  <Insets bottom="30.0"/>
-               </VBox.margin>
-            </TextField>
-            <TextField>
-               <VBox.margin>
-                  <Insets bottom="30.0"/>
+                  <Insets/>
                </VBox.margin>
             </TextField>
-            <TextArea/>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <children>
+                  <Label fx:id="startTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
+                         visible="false">
+                     <GridPane.margin>
+                        <Insets/>
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="startTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+                         visible="false"/>
+                  <Label fx:id="selectStartDateError" prefHeight="25.0" text="Select a date" textFill="RED"
+                         visible="false"/>
+                  <Label fx:id="startTimeBeforeEndError" prefHeight="25.0" text="Must be before end time" textFill="RED"
+                         visible="false"/>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+            </GridPane>
+            <TextField fx:id="endTimeField" maxWidth="110.0" promptText="24 Hour HH:MM">
+               <VBox.margin>
+                  <Insets/>
+               </VBox.margin>
+            </TextField>
+            <GridPane minHeight="17.0" prefHeight="17.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+               </rowConstraints>
+               <children>
+                  <Label fx:id="endTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
+                         visible="false">
+                     <GridPane.margin>
+                        <Insets/>
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="endTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+                         visible="false"/>
+                  <Label fx:id="selectEndDateError" text="Select a date" textFill="RED" visible="false"/>
+                  <Label fx:id="endTimeAfterStartError" text="Must be after start time" textFill="RED" visible="false"/>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" top="2.5"/>
+               </VBox.margin>
+            </GridPane>
+            <TextArea fx:id="descriptionArea"/>
          </VBox>
          <VBox prefHeight="200.0" prefWidth="60.0" HBox.hgrow="SOMETIMES"/>
       </HBox>
@@ -154,8 +274,8 @@
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="40.0"/>
          </BorderPane.margin>
-         <Button mnemonicParsing="false" prefWidth="60.0" text="Cancel"/>
-         <Button mnemonicParsing="false" prefWidth="60.0" text="Save"/>
+         <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#close" prefWidth="60.0" text="Cancel"/>
+         <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" prefWidth="60.0" text="Save"/>
       </HBox>
    </bottom>
 </BorderPane>

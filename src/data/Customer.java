@@ -20,26 +20,22 @@ public class Customer {
     private SimpleStringProperty divisionProp;
     private SimpleStringProperty countryProp;
 
-    public static final String COLUMN_ID = "Customer_ID";
-    public static final String COLUMN_NAME = "Customer_Name";
-    public static final String COLUMN_ADDRESS = "Address";
-    public static final String COLUMN_POSTAL_CODE = "Postal_Code";
-    public static final String COLUMN_PHONE = "Phone";
-    public static final String COLUMN_CREATE_DATE = "Create_Date";
-    public static final String COLUMN_CREATED_BY = "Created_By";
-    public static final String COLUMN_LAST_UPDATE = "Last_Update";
-    public static final String COLUMN_LAST_UPDATED_BY = "Last_Updated_By";
-    public static final String COLUMN_DIVISION_ID = "Division_ID";
+    public static final String TABLE = "customers";
+    public static final String ID = "Customer_ID";
+    public static final String NAME = "Customer_Name";
+    public static final String ADDRESS = "Address";
+    public static final String POSTAL_CODE = "Postal_Code";
+    public static final String PHONE = "Phone";
+    public static final String CREATED_BY = "Created_By";
+    public static final String LAST_UPDATE = "Last_Update";
+    public static final String LAST_UPDATED_BY = "Last_Updated_By";
+    public static final String DIVISION_ID = "Division_ID";
 
     public static final int INDEX_ID = 1;
     public static final int INDEX_NAME = 2;
     public static final int INDEX_ADDRESS = 3;
     public static final int INDEX_POSTAL_CODE = 4;
     public static final int INDEX_PHONE = 5;
-    public static final int INDEX_CREATE_DATE = 6;
-    public static final int INDEX_CREATED_BY = 7;
-    public static final int INDEX_LAST_UPDATE = 8;
-    public static final int INDEX_LAST_UPDATED_BY = 9;
     public static final int INDEX_DIVISION_ID = 10;
 
     public Customer(int id, String name, String address, String postalCode, String phone, int divisionId, String country) {

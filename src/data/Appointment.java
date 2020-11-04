@@ -29,20 +29,21 @@ public class Appointment {
     private SimpleStringProperty customerIdProp;
     private SimpleStringProperty contactProp;
 
-    public static final String COLUMN_ID = "Appointment_ID";
-    public static final String COLUMN_TITLE = "Title";
-    public static final String COLUMN_DESCRIPTION = "Description";
-    public static final String COLUMN_LOCATION = "Location";
-    public static final String COLUMN_TYPE = "Type";
-    public static final String COLUMN_START = "Start";
-    public static final String COLUMN_END = "End";
-    public static final String COLUMN_CREATE_DATE = "Create_Date";
-    public static final String COLUMN_CREATED_BY = "Created_By";
-    public static final String COLUMN_LAST_UPDATE = "Last_Update";
-    public static final String COLUMN_LAST_UPDATED_BY = "Last_Updated_By";
-    public static final String COLUMN_CUSTOMER_ID = "Customer_ID";
-    public static final String COLUMN_USER_ID = "User_ID";
-    public static final String COLUMN_CONTACT_ID = "Contact_ID";
+    public static final String TABLE = "appointments";
+    public static final String ID = "Appointment_ID";
+    public static final String TITLE = "Title";
+    public static final String DESCRIPTION = "Description";
+    public static final String LOCATION = "Location";
+    public static final String TYPE = "Type";
+    public static final String START = "Start";
+    public static final String END = "End";
+    public static final String CREATE_DATE = "Create_Date";
+    public static final String CREATED_BY = "Created_By";
+    public static final String LAST_UPDATE = "Last_Update";
+    public static final String LAST_UPDATED_BY = "Last_Updated_By";
+    public static final String CUSTOMER_ID = "Customer_ID";
+    public static final String USER_ID = "User_ID";
+    public static final String CONTACT_ID = "Contact_ID";
 
     public static final int INDEX_ID = 1;
     public static final int INDEX_TITLE = 2;
@@ -51,10 +52,6 @@ public class Appointment {
     public static final int INDEX_TYPE = 5;
     public static final int INDEX_START = 6;
     public static final int INDEX_END = 7;
-    public static final int INDEX_CREATE_DATE = 8;
-    public static final int INDEX_CREATED_BY = 9;
-    public static final int INDEX_LAST_UPDATE = 10;
-    public static final int INDEX_LAST_UPDATED_BY = 11;
     public static final int INDEX_CUSTOMER_ID = 12;
     public static final int INDEX_USER_ID = 13;
     public static final int INDEX_CONTACT_ID = 14;

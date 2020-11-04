@@ -4,8 +4,9 @@ public class Country {
     private int id;
     private String name;
 
-    public static final String COUNTRY_NAME = "Country";
-    public static final String COUNTRY_ID = "Country_ID";
+    public static final String TABLE = "countries";
+    public static final String NAME = "Country";
+    public static final String ID = "Country_ID";
 
     public int getId() {
         return id;

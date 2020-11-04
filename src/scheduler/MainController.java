@@ -152,6 +152,10 @@ public class MainController {
         }
     }
 
+    /**
+     * Edits a customer or appointment based on the tab that is selected. Takes the selected item and loads it into the
+     * appropriate fxml file
+     */
     @FXML
     private void edit() {
         if (customerTab.isSelected()) {
@@ -167,6 +171,17 @@ public class MainController {
                 }
             }
         } else {
+            Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+            if (selectedAppointment == null) {
+                Main.showAlert(Alert.AlertType.INFORMATION, "No Appointment Selected", "Please select an appointment to edit");
+            } else {
+                try {
+                    CustomerController controller = newWindow("appointment", "Edit Appointment").getController();
+//                    controller.editAppointment(selectedAppointment);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
     }
@@ -182,12 +197,12 @@ public class MainController {
             if (selectedCustomer == null) {
                 Main.showAlert(Alert.AlertType.INFORMATION, "No Customer Selected", "Please select a customer to delete");
             } else if (!Data.safeToDelete(selectedCustomer.getId())) {
-                Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting this " +
-                        "customer. Please make sure that the customer is not associated with any appointments before deleting.");
+                Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting " + selectedCustomer.getName() +
+                        ". Please make sure that the customer is not associated with any appointments before deleting.");
             } else {
                 if (Data.deleteCustomer(selectedCustomer)) {
-                    Main.showAlert(Alert.AlertType.INFORMATION, "Customer Deleted", "Customer successfully deleted " +
-                            "from the database");
+                    Main.showAlert(Alert.AlertType.INFORMATION, "Customer Deleted", selectedCustomer.getName() +
+                            " deleted from the database");
                 } else {
                     Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting from the database");
                 }

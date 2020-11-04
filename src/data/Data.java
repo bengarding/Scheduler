@@ -19,18 +19,13 @@ import java.util.Properties;
 
 public class Data {
 
-    public static final String TABLE_APPOINTMENTS = "appointments";
-    public static final String TABLE_USERS = "users";
-    public static final String TABLE_CONTACTS = "contacts";
-    public static final String TABLE_CUSTOMERS = "customers";
-    public static final String TABLE_DIVISIONS = "first_level_divisions";
-    public static final String TABLE_COUNTRIES = "countries";
 
     public static List<User> userList = new ArrayList<>();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
     public static ObservableList<Country> countryList = FXCollections.observableArrayList();
     public static ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
     public static ObservableList<Division> divisionList = FXCollections.observableArrayList();
+    public static ObservableList<Contact> contactList = FXCollections.observableArrayList();
 
     private static Connection conn;
 
@@ -47,6 +42,7 @@ public class Data {
             getAllUsers();
             getAllCountries();
             getAllAppointments();
+            getAllContacts();
             return true;
         } catch (SQLException e) {
             System.out.println("Failed loading database: " + e.getMessage());
@@ -82,7 +78,7 @@ public class Data {
     public static void getAllAppointments() {
 
         try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_APPOINTMENTS)) {
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Appointment.TABLE)) {
 
             while (results.next()) {
                 Appointment appointment = new Appointment();
@@ -111,7 +107,7 @@ public class Data {
     public static void getAllCustomers() {
 
         try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_CUSTOMERS)) {
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Customer.TABLE)) {
 
             while (results.next()) {
                 Customer customer = new Customer();
@@ -135,12 +131,12 @@ public class Data {
      */
     public static void getAllCountries() {
         try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_COUNTRIES)) {
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Country.TABLE)) {
 
             while (results.next()) {
                 Country country = new Country();
-                country.setId(results.getInt(Country.COUNTRY_ID));
-                country.setName(results.getString(Country.COUNTRY_NAME));
+                country.setId(results.getInt(Country.ID));
+                country.setName(results.getString(Country.NAME));
 
                 countryList.add(country);
             }
@@ -150,12 +146,31 @@ public class Data {
     }
 
     /**
+     * Extracts all the contacts from the database and stores them into a static ObservableArrayList
+     */
+    public static void getAllContacts() {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Contact.TABLE)) {
+
+            while (results.next()) {
+                Contact contact = new Contact();
+                contact.setId(results.getInt(Contact.ID));
+                contact.setName(results.getString(Contact.NAME));
+
+                contactList.add(contact);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to extract contacts: " + e.getMessage());
+        }
+    }
+
+    /**
      * Extracts all users from the database and stores them into a static ArrayList
      */
     public static void getAllUsers() {
 
         try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + TABLE_USERS)) {
+             ResultSet results = statement.executeQuery("SELECT * FROM " + User.TABLE)) {
 
             while (results.next()) {
                 User user = new User();
@@ -172,6 +187,31 @@ public class Data {
     }
 
     /**
+     * Clears the current divisionList and then extracts all the divisions from the database for a specified country
+     * and stores them into a static ObservableArrayList
+     *
+     * @param country The country to be searched with
+     */
+    public static void getAllDivisions(String country) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT *  FROM " + Division.TABLE +
+                     " WHERE " + Country.ID + "=(SELECT " + Country.ID + " FROM " + Country.TABLE +
+                     " WHERE " + Country.NAME + "='" + country + "')")) {
+            divisionList.clear();
+            while (results.next()) {
+                Division division = new Division();
+                division.setId(results.getInt(Division.ID));
+                division.setName(results.getString(Division.NAME));
+
+                divisionList.add(division);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Failed to extract divisions: " + e.getMessage());
+        }
+    }
+
+    /**
      * Extracts a single division name from the first_level_division table in the database
      *
      * @param id The division ID to search with
@@ -179,8 +219,8 @@ public class Data {
      */
     public static String getDivisionName(int id) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT " + Division.DIVISION_NAME + " FROM " + TABLE_DIVISIONS +
-                     " WHERE " + Division.DIVISION_ID + "=" + id)) {
+             ResultSet result = statement.executeQuery("SELECT " + Division.NAME + " FROM " + Division.TABLE +
+                     " WHERE " + Division.ID + "=" + id)) {
             result.next();
             return result.getString(1);
         } catch (SQLException e) {
@@ -197,8 +237,8 @@ public class Data {
      */
     public static int getDivisionId(String name) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT " + Division.DIVISION_ID + " FROM " + TABLE_DIVISIONS +
-                     " WHERE " + Division.DIVISION_NAME + "='" + name + "'")) {
+             ResultSet result = statement.executeQuery("SELECT " + Division.ID + " FROM " + Division.TABLE +
+                     " WHERE " + Division.NAME + "='" + name + "'")) {
             result.next();
             return result.getInt(1);
         } catch (SQLException e) {
@@ -215,9 +255,9 @@ public class Data {
      */
     public static String getCountryName(int id) {
         try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT " + Country.COUNTRY_NAME + " FROM " + TABLE_COUNTRIES +
-                     " country INNER JOIN " + TABLE_DIVISIONS + " division ON country." + Country.COUNTRY_ID +
-                     " = division." + Country.COUNTRY_ID + " WHERE division." + Division.DIVISION_ID + "=" + id)) {
+             ResultSet result = statement.executeQuery("SELECT " + Country.NAME + " FROM " + Country.TABLE +
+                     " country INNER JOIN " + Division.TABLE + " division ON country." + Country.ID +
+                     " = division." + Country.ID + " WHERE division." + Division.ID + "=" + id)) {
 
             result.next();
             return result.getString(1);
@@ -234,50 +274,21 @@ public class Data {
      * @return The contact name
      */
     public static String getContactName(int id) {
-        try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT " + Contact.CONTACT_NAME + " FROM " +
-                     TABLE_CONTACTS + " WHERE " + Contact.CONTACT_ID + "=" + id)) {
-
-            result.next();
-            return result.getString(1);
-        } catch (SQLException e) {
-            System.out.println("Failed to extract contact name: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Clears the current divisionList and then extracts all the divisions from the database for a specified country
-     * and stores them into a static ObservableArrayList
-     *
-     * @param country The country to be searched with
-     */
-    public static void getAllDivisions(String country) {
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT *  FROM " + TABLE_DIVISIONS +
-                     " WHERE " + Country.COUNTRY_ID + "=(SELECT " + Country.COUNTRY_ID + " FROM " + TABLE_COUNTRIES +
-                     " WHERE " + Country.COUNTRY_NAME + "='" + country + "')")) {
-            divisionList.clear();
-            while (results.next()) {
-                Division division = new Division();
-                division.setId(results.getInt(Division.DIVISION_ID));
-                division.setName(results.getString(Division.DIVISION_NAME));
-
-                divisionList.add(division);
+        for (Contact contact : contactList) {
+            if (contact.getId() == id) {
+                return contact.getName();
             }
-
-        } catch (SQLException e) {
-            System.out.println("Failed to extract divisions: " + e.getMessage());
         }
+        return null;
     }
 
     public static boolean newCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
             String currentUser = Main.currentUser.getUserName();
 
-            statement.execute("INSERT INTO " + TABLE_CUSTOMERS + " (" + Customer.COLUMN_ID + ", " + Customer.COLUMN_NAME +
-                    ", " + Customer.COLUMN_ADDRESS + ", " + Customer.COLUMN_POSTAL_CODE + ", " + Customer.COLUMN_PHONE + ", " +
-                    Customer.COLUMN_CREATED_BY + ", " + Customer.COLUMN_LAST_UPDATED_BY + ", " + Customer.COLUMN_DIVISION_ID +
+            statement.execute("INSERT INTO " + Customer.TABLE + " (" + Customer.ID + ", " + Customer.NAME +
+                    ", " + Customer.ADDRESS + ", " + Customer.POSTAL_CODE + ", " + Customer.PHONE + ", " +
+                    Customer.CREATED_BY + ", " + Customer.LAST_UPDATED_BY + ", " + Customer.DIVISION_ID +
                     ") VALUES(" + customer.getId() + ", '" + customer.getName() + "', '" + customer.getAddress() + "', '" +
                     customer.getPostalCode() + "', '" + customer.getPhone() + "', '" + currentUser + "', '" + currentUser +
                     "', " + customer.getDivisionId() + ")");
@@ -299,12 +310,12 @@ public class Data {
      */
     public static boolean editCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
-            statement.execute("UPDATE " + TABLE_CUSTOMERS + " SET " + Customer.COLUMN_NAME + "='" + customer.getName() +
-                    "', " + Customer.COLUMN_ADDRESS + "='" + customer.getAddress() + "', " + Customer.COLUMN_POSTAL_CODE +
-                    "='" + customer.getPostalCode() + "', " + Customer.COLUMN_PHONE + "='" + customer.getPhone() + "', " +
-                    Customer.COLUMN_LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Customer.COLUMN_LAST_UPDATED_BY +
-                    "='" + Main.currentUser.getUserName() + "', " + Customer.COLUMN_DIVISION_ID + "="
-                    + customer.getDivisionId() + " WHERE " + Customer.COLUMN_ID + "=" + customer.getId());
+            statement.execute("UPDATE " + Customer.TABLE + " SET " + Customer.NAME + "='" + customer.getName() +
+                    "', " + Customer.ADDRESS + "='" + customer.getAddress() + "', " + Customer.POSTAL_CODE +
+                    "='" + customer.getPostalCode() + "', " + Customer.PHONE + "='" + customer.getPhone() + "', " +
+                    Customer.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Customer.LAST_UPDATED_BY +
+                    "='" + Main.currentUser.getUserName() + "', " + Customer.DIVISION_ID + "="
+                    + customer.getDivisionId() + " WHERE " + Customer.ID + "=" + customer.getId());
 
             customerList.clear();
             getAllCustomers();
@@ -323,7 +334,7 @@ public class Data {
      */
     public static boolean deleteCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
-            statement.execute("DELETE FROM " + TABLE_CUSTOMERS + " WHERE " + Customer.COLUMN_ID + "=" + customer.getId());
+            statement.execute("DELETE FROM " + Customer.TABLE + " WHERE " + Customer.ID + "=" + customer.getId());
 
             customerList.clear();
             getAllCustomers();
@@ -342,9 +353,9 @@ public class Data {
      */
     public static boolean safeToDelete(int customerID) {
         try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + TABLE_APPOINTMENTS + " appts INNER JOIN " +
-                     TABLE_CUSTOMERS + " custs ON appts." + Customer.COLUMN_ID + " = custs." + Customer.COLUMN_ID +
-                     " WHERE custs." + Customer.COLUMN_ID + "=" + customerID)) {
+             ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + Appointment.TABLE + " appts INNER JOIN " +
+                     Customer.TABLE + " custs ON appts." + Customer.ID + " = custs." + Customer.ID +
+                     " WHERE custs." + Customer.ID + "=" + customerID)) {
             results.next();
             if (results.getInt(1) == 0) {
                 return true;
@@ -353,5 +364,19 @@ public class Data {
             System.out.println("Failed to find match: " + e.getMessage());
         }
         return false;
+    }
+
+    public static ResultSet getAppointmentsForCustomer(int customerID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.START + ", " +
+                     Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE +
+                     " custs ON appts." + Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." +
+                     Customer.ID + "=" + customerID)) {
+
+            return results;
+        } catch (SQLException e) {
+            System.out.println("Failed to find appointments for customer: " + e.getMessage());
+            return null;
+        }
     }
 }

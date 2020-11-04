@@ -45,11 +45,11 @@ public class CustomerController {
 
     public void initialize() {
         ObservableList<String> countryNames = FXCollections.observableArrayList();
-
         for (Country country : Data.countryList) {
             countryNames.add(country.getName());
         }
         countryBox.setItems(countryNames);
+
         idField.setText(String.valueOf(Data.customerList.get(Data.customerList.size() - 1).getId() + 1));
 
         countryBox.focusedProperty().addListener((observableValue, aBoolean, t1) -> {

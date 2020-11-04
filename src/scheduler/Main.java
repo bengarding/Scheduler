@@ -17,10 +17,9 @@ public class Main extends Application {
     public static ResourceBundle language = ResourceBundle.getBundle("res/lang", Locale.getDefault());
     public static User currentUser;
 
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("appointment.fxml"));
         if (Locale.getDefault().getLanguage().equals("fr")) {
             primaryStage.setTitle(language.getString("scheduler"));
         } else {
@@ -32,6 +31,27 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
+//        ZoneId.getAvailableZoneIds().stream().filter(c -> c.contains("UTC")).sorted().forEach(System.out::println);
+//        LocalDate parisDate = LocalDate.of(2020, 10, 10);
+//        LocalTime estStartTime = LocalTime.of(13,0);
+//        ZoneId parisZoneId = ZoneId.of("Europe/Paris");
+//        ZonedDateTime parisZDT = ZonedDateTime.of(parisDate, estStartTime, parisZoneId);
+//        ZoneId localZoneId = ZoneId.of(TimeZone.getDefault().getID());
+//
+//        Instant parisToUTCInstant = parisZDT.toInstant();
+//        ZonedDateTime parisToLocalZDT = parisZDT.withZoneSameLocal(localZoneId);
+//        ZonedDateTime UTCToLocalZDT = parisToUTCInstant.atZone(localZoneId);
+//
+//        System.out.println("local: " + ZonedDateTime.now());
+//        System.out.println("paris: " + parisZDT);
+//        System.out.println("paris->utc: " + parisToUTCInstant);
+//        System.out.println("utc->local: " + UTCToLocalZDT);
+//        System.out.println("utc->local date only: " + UTCToLocalZDT.toLocalDate());
+
+//        String date = String.valueOf(UTCToLocalZDT.toLocalDate());
+//        System.out.println(String.valueOf(UTCToLocalZDT.toLocalDate()) + " " + String.valueOf(UTCToLocalZDT.toLocalTime())); // for sql
+
+
         Data.open();
         launch(args);
     }
