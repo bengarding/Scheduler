@@ -275,7 +275,8 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="40.0"/>
          </BorderPane.margin>
          <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#close" prefWidth="60.0" text="Cancel"/>
-         <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" prefWidth="60.0" text="Save"/>
+         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="60.0"
+                 text="Save"/>
       </HBox>
    </bottom>
 </BorderPane>

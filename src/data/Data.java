@@ -444,4 +444,61 @@ public class Data {
         }
         return false;
     }
+
+    /**
+     * Extracts an ArrayList of appointments for a specified customer
+     *
+     * @param customerID The customer ID to search with
+     * @return ArrayList of appointments that only has values for title, start, and end
+     */
+    public static ArrayList<Appointment> getAppointmentsForCustomer(int customerID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT " + Appointment.TITLE + ", " + Appointment.START + ", " +
+                     Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE + " custs ON appts." +
+                     Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." + Customer.ID + "=" + customerID)) {
+
+            ArrayList<Appointment> appointments = new ArrayList<>();
+            while (results.next()) {
+                Appointment appt = new Appointment();
+                appt.setTitle(results.getString("Title"));
+                appt.setStart(results.getTimestamp("Start"));
+                appt.setEnd(results.getTimestamp("End"));
+                appointments.add(appt);
+            }
+            return appointments;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to find appointments: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts an ArrayList of appointments for a specified user
+     *
+     * @param userID The user ID to search with
+     * @return ArrayList of appointments that only has values for title and start
+     */
+    public static ArrayList<Appointment> getAppointmentsForUser(int userID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.START + ", " +
+                     Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + User.TABLE + " user ON appts." +
+                     Appointment.USER_ID + " = user." + User.ID + " WHERE user." + User.ID + "=" + userID)) {
+
+            ArrayList<Appointment> appointments = new ArrayList<>();
+            while (results.next()) {
+                Appointment appt = new Appointment();
+                appt.setId(results.getInt(Appointment.ID));
+                appt.setStart(results.getTimestamp(Appointment.START));
+                appt.setEnd(results.getTimestamp(Appointment.END));
+                appointments.add(appt);
+            }
+            return appointments;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to find appointments: " + e.getMessage());
+            return null;
+        }
+    }
+
 }

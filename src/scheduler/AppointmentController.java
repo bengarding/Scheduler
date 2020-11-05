@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -278,12 +279,15 @@ public class AppointmentController {
             return false;
         }
         if (customerIDExists && startTimePicked != null && endTimePicked != null) {
-            for (Appointment appointment : Data.appointmentList) {
-                if (appointment.getCustomerId() == Integer.parseInt(customerIDField.getText())) {
+            ArrayList<Appointment> appointments = Data.getAppointmentsForCustomer(Integer.parseInt(customerIDField.getText()));
+            if (appointments != null) {
+                for (Appointment appointment : appointments) {
+
                     Instant startAppointment = ZonedDateTime.of(appointment.getStart().minusMinutes(1), localZone).toInstant();
                     Instant endAppointment = ZonedDateTime.of(appointment.getEnd().plusMinutes(1), localZone).toInstant();
+
                     DateTimeFormatter zoneFormatter = DateTimeFormatter.ofPattern("zzz", Locale.getDefault());
-                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/u");
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M-d-u");
 
                     if ((startTimePicked.isAfter(startAppointment) && startTimePicked.isBefore(endAppointment)) ||
                             (endTimePicked.isAfter(startAppointment) && endTimePicked.isBefore(endAppointment)) ||

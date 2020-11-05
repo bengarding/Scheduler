@@ -1,18 +1,19 @@
 package scheduler;
 
+import data.Appointment;
 import data.Data;
 import data.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class LoginController {
@@ -77,6 +78,26 @@ public class LoginController {
 
                     Stage oldStage = (Stage) submitButton.getScene().getWindow();
                     oldStage.close();
+
+                    boolean upcomingAppointments = false;
+                    ArrayList<Appointment> appointments = Data.getAppointmentsForUser(user.getId());
+                    if (appointments != null) {
+                        for (Appointment appointment : appointments) {
+                            if (appointment.getStart().isAfter(LocalDateTime.now()) && appointment.getStart().isBefore(LocalDateTime.now().plusMinutes(15))) {
+                                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M-d-u");
+                                String message = "You have an appointment starting soon: \nID: " + appointment.getId() +
+                                        "\nDate: " + appointment.getStart().toLocalDate().format(dateFormatter) + "\nTime: " +
+                                        appointment.getStart().toLocalTime() + " - " + appointment.getEnd().toLocalTime();
+                                Main.showAlert(Alert.AlertType.INFORMATION, "Upcoming Appointment", message);
+                                upcomingAppointments = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!upcomingAppointments) {
+                        Main.showAlert(Alert.AlertType.INFORMATION, "No Upcoming Appointments",
+                                "There are no appointments scheduled in the next 15 minutes");
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();

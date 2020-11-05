@@ -7,6 +7,7 @@ public class User {
     private String password;
 
     public static final String TABLE = "users";
+    public static final String ID = "User_ID";
     public static final int INDEX_ID = 1;
     public static final int INDEX_NAME = 2;
     public static final int INDEX_PASSWORD = 3;
