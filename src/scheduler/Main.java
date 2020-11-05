@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -16,10 +17,11 @@ public class Main extends Application {
 
     public static ResourceBundle language = ResourceBundle.getBundle("res/lang", Locale.getDefault());
     public static User currentUser;
+    public static DateTimeFormatter zoneFormatter = DateTimeFormatter.ofPattern("zzz", Locale.getDefault());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         primaryStage.setTitle(language.getString("scheduler"));
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

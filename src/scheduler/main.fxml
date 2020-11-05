@@ -157,10 +157,8 @@
                 <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit Application"/>
             </Menu>
             <Menu mnemonicParsing="false" text="New">
-                <items>
-                    <MenuItem mnemonicParsing="false" onAction="#newAppointment" text="Appointment"/>
-                    <MenuItem mnemonicParsing="false" onAction="#newCustomer" text="Customer"/>
-                </items>
+                <MenuItem mnemonicParsing="false" onAction="#newAppointment" text="Appointment"/>
+                <MenuItem mnemonicParsing="false" onAction="#newCustomer" text="Customer"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                 <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit Selected"/>
@@ -170,7 +168,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#typeReport" text="Appointments by Type"/>
                 <MenuItem mnemonicParsing="false" onAction="#monthReport" text="Appointments by Month"/>
                 <MenuItem mnemonicParsing="false" onAction="#contactReport" text="Appointments by Contact"/>
-                <MenuItem mnemonicParsing="false" text="Appointments by Customer"/>
+                <MenuItem mnemonicParsing="false" onAction="#customerReport" text="Appointments by Customer"/>
             </Menu>
         </MenuBar>
     </top>

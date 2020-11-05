@@ -239,7 +239,7 @@ public class MainController {
 
         if (types != null) {
             int longestType = 0;
-            int tabs = 0;
+            int tabs;
 
             for (Report type : types) {
                 if (type.getType().length() > longestType) {
@@ -276,7 +276,6 @@ public class MainController {
         if (months != null) {
             for (Report month : months) {
                 String currentMonth;
-                System.out.println(month.getMonth());
                 switch (month.getMonth()) {
                     case 1:
                         currentMonth = "January:\t\t";
@@ -330,6 +329,18 @@ public class MainController {
     private void contactReport() {
         try {
             newWindow("contactReport", "Contact Appointment Report");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Opens customerReport.fxml
+     */
+    @FXML
+    private void customerReport() {
+        try {
+            newWindow("customerReport", "Customer Appointment Report");
         } catch (IOException e) {
             e.printStackTrace();
         }

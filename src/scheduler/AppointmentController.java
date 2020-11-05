@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class AppointmentController {
@@ -279,14 +278,14 @@ public class AppointmentController {
             return false;
         }
         if (customerIDExists && startTimePicked != null && endTimePicked != null) {
-            ArrayList<Appointment> appointments = Data.getAppointmentsForCustomer(Integer.parseInt(customerIDField.getText()));
+            ArrayList<Appointment> appointments = Data.getAppointmentDatesForCustomer(Integer.parseInt(customerIDField.getText()));
             if (appointments != null) {
                 for (Appointment appointment : appointments) {
 
                     Instant startAppointment = ZonedDateTime.of(appointment.getStart().minusMinutes(1), localZone).toInstant();
                     Instant endAppointment = ZonedDateTime.of(appointment.getEnd().plusMinutes(1), localZone).toInstant();
 
-                    DateTimeFormatter zoneFormatter = DateTimeFormatter.ofPattern("zzz", Locale.getDefault());
+
                     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M-d-u");
 
                     if ((startTimePicked.isAfter(startAppointment) && startTimePicked.isBefore(endAppointment)) ||
@@ -296,7 +295,7 @@ public class AppointmentController {
                         String message = "The time chosen conflicts with the appointment: " + appointment.getTitle() +
                                 ", which is scheduled from " + appointment.getStart().toLocalDate().format(dateFormatter) + " " +
                                 appointment.getStart().toLocalTime() + " to " + appointment.getEnd().toLocalDate().format(dateFormatter) + " " +
-                                appointment.getEnd().toLocalTime() + " " + ZonedDateTime.now().format(zoneFormatter) + ". Please select another time for the new appointment";
+                                appointment.getEnd().toLocalTime() + " " + ZonedDateTime.now().format(Main.zoneFormatter) + ". Please select another time for the new appointment";
                         Main.showAlert(Alert.AlertType.INFORMATION, "Schedule Conflict", message);
                         return false;
                     }
@@ -311,12 +310,11 @@ public class AppointmentController {
      * business hours are shown in local time.
      */
     private void outsideHours() {
-        DateTimeFormatter zoneFormatter = DateTimeFormatter.ofPattern("zzz", Locale.getDefault());
 
         String message = "You have selected a time that is outside of normal business hours: 8:00-22:00 EST. The business hours in your " +
                 "time zone are " + ZonedDateTime.of(LocalDate.now(), startTimeEST.plusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
                 "-" + ZonedDateTime.of(LocalDate.now(), endTimeEST.minusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
-                " " + ZonedDateTime.now().format(zoneFormatter);
+                " " + ZonedDateTime.now().format(Main.zoneFormatter);
         Main.showAlert(Alert.AlertType.INFORMATION, "Outside Business Hours", message);
     }
 

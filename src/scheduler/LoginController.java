@@ -59,6 +59,7 @@ public class LoginController {
         for (User user : Data.userList) {
             if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
                 Main.currentUser = user;
+                Data.logActivity(usernameField.getText(), passwordField.getText(), true);
 
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader();
@@ -99,7 +100,7 @@ public class LoginController {
                 }
             } else if (user.getUserName().equals(usernameField.getText())) {
                 error.setVisible(true);
-
+                Data.logActivity(usernameField.getText(), passwordField.getText(), false);
                 String message = Main.language.getString("incorrect_password_for") + " " + usernameField.getText();
                 Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("incorrect_password"), message);
                 return;
@@ -109,6 +110,7 @@ public class LoginController {
         String message = Main.language.getString("username") + " '" + usernameField.getText() + "' " +
                 Main.language.getString("not_found") + ".";
         Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("user_not_found"), message);
+        Data.logActivity(usernameField.getText(), passwordField.getText(), false);
     }
 
     /**

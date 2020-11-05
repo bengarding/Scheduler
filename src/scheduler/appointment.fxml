@@ -106,11 +106,9 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-               <children>
-                  <Label fx:id="startDateError" text="Select a start date" textFill="RED" visible="false"/>
-                  <Label fx:id="startDateBeforeEndError" text="Cannot be after end date" textFill="RED"
-                         visible="false"/>
-               </children>
+               <Label fx:id="startDateError" text="Select a start date" textFill="RED" visible="false"/>
+               <Label fx:id="startDateBeforeEndError" text="Cannot be after end date" textFill="RED"
+                      visible="false"/>
             </GridPane>
             <DatePicker fx:id="endDatePicker" prefWidth="185.0"/>
             <GridPane minHeight="17.0" prefHeight="17.0">
@@ -123,11 +121,9 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-               <children>
-                  <Label fx:id="endDateError" text="Select an end date" textFill="RED" visible="false"/>
-                  <Label fx:id="endDateAfterStartError" text="Cannot be before start date" textFill="RED"
-                         visible="false"/>
-               </children>
+               <Label fx:id="endDateError" text="Select an end date" textFill="RED" visible="false"/>
+               <Label fx:id="endDateAfterStartError" text="Cannot be before start date" textFill="RED"
+                      visible="false"/>
             </GridPane>
             <TextField fx:id="customerIDField" maxWidth="110.0"/>
             <GridPane minHeight="17.0" prefHeight="17.0">
@@ -140,11 +136,9 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-               <children>
-                  <Label fx:id="customerIDError" text="Enter a customer ID" textFill="RED" visible="false"/>
-                  <Label fx:id="customerIDExistsError" text="Customer ID does not exist" textFill="RED"
-                         visible="false"/>
-               </children>
+               <Label fx:id="customerIDError" text="Enter a customer ID" textFill="RED" visible="false"/>
+               <Label fx:id="customerIDExistsError" text="Customer ID does not exist" textFill="RED"
+                      visible="false"/>
             </GridPane>
             <TextField fx:id="userIDField" maxWidth="110.0"/>
             <GridPane minHeight="17.0" prefHeight="17.0">
@@ -157,10 +151,8 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
-               <children>
-                  <Label fx:id="userIDError" text="Enter a user ID" textFill="RED" visible="false"/>
-                  <Label fx:id="UserIDExistsError" text="User ID does not exist" textFill="RED" visible="false"/>
-               </children>
+               <Label fx:id="userIDError" text="Enter a user ID" textFill="RED" visible="false"/>
+               <Label fx:id="UserIDExistsError" text="User ID does not exist" textFill="RED" visible="false"/>
             </GridPane>
             <ComboBox fx:id="contactBox" prefWidth="185.0"/>
             <Label fx:id="contactError" text="Select a contact" textFill="RED" visible="false">
@@ -218,23 +210,21 @@
                <rowConstraints>
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                </rowConstraints>
-               <children>
-                  <Label fx:id="startTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
-                         visible="false">
-                     <GridPane.margin>
-                        <Insets/>
-                     </GridPane.margin>
-                  </Label>
-                  <Label fx:id="startTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
-                         visible="false"/>
-                  <Label fx:id="selectStartDateError" prefHeight="25.0" text="Select a date" textFill="RED"
-                         visible="false"/>
-                  <Label fx:id="startTimeBeforeEndError" prefHeight="25.0" text="Must be before end time" textFill="RED"
-                         visible="false"/>
-               </children>
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
+               <Label fx:id="startTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
+                      visible="false">
+                  <GridPane.margin>
+                     <Insets/>
+                  </GridPane.margin>
+               </Label>
+               <Label fx:id="startTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+                      visible="false"/>
+               <Label fx:id="selectStartDateError" prefHeight="25.0" text="Select a date" textFill="RED"
+                      visible="false"/>
+               <Label fx:id="startTimeBeforeEndError" prefHeight="25.0" text="Must be before end time" textFill="RED"
+                      visible="false"/>
             </GridPane>
             <TextField fx:id="endTimeField" maxWidth="110.0" promptText="24 Hour HH:MM">
                <VBox.margin>
@@ -248,21 +238,19 @@
                <rowConstraints>
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                </rowConstraints>
-               <children>
-                  <Label fx:id="endTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
-                         visible="false">
-                     <GridPane.margin>
-                        <Insets/>
-                     </GridPane.margin>
-                  </Label>
-                  <Label fx:id="endTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
-                         visible="false"/>
-                  <Label fx:id="selectEndDateError" text="Select a date" textFill="RED" visible="false"/>
-                  <Label fx:id="endTimeAfterStartError" text="Must be after start time" textFill="RED" visible="false"/>
-               </children>
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" top="2.5"/>
                </VBox.margin>
+               <Label fx:id="endTimeError" prefHeight="25.0" text="Enter 24-hr time as HH:MM" textFill="RED"
+                      visible="false">
+                  <GridPane.margin>
+                     <Insets/>
+                  </GridPane.margin>
+               </Label>
+               <Label fx:id="endTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+                      visible="false"/>
+               <Label fx:id="selectEndDateError" text="Select a date" textFill="RED" visible="false"/>
+               <Label fx:id="endTimeAfterStartError" text="Must be after start time" textFill="RED" visible="false"/>
             </GridPane>
             <TextArea fx:id="descriptionArea"/>
          </VBox>

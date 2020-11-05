@@ -15,65 +15,53 @@
             fx:controller="scheduler.LoginController">
     <center>
         <VBox BorderPane.alignment="CENTER">
-            <children>
-                <HBox VBox.vgrow="ALWAYS">
-                    <children>
-                        <VBox alignment="CENTER_RIGHT" prefWidth="100.0" spacing="10.0">
-                            <children>
-                                <Label fx:id="username" alignment="CENTER_RIGHT" prefHeight="25.0" text="Username"/>
-                                <Label fx:id="password" alignment="CENTER_RIGHT" prefHeight="25.0" text="Password"/>
-                            </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <TextField fx:id="usernameField" prefHeight="25.0">
-                                    <VBox.margin>
-                                        <Insets right="30.0"/>
-                                    </VBox.margin>
-                                </TextField>
-                                <PasswordField fx:id="passwordField" prefHeight="25.0">
-                                    <VBox.margin>
-                                        <Insets right="30.0"/>
-                                    </VBox.margin>
-                                </PasswordField>
-                     </children>
-                      <HBox.margin>
-                          <Insets left="10.0"/>
-                      </HBox.margin>
-                  </VBox>
-               </children>
+            <HBox VBox.vgrow="ALWAYS">
                 <VBox.margin>
                     <Insets top="25.0"/>
                 </VBox.margin>
+                <VBox alignment="CENTER_RIGHT" prefWidth="100.0" spacing="10.0">
+                    <Label fx:id="username" alignment="CENTER_RIGHT" prefHeight="25.0" text="Username"/>
+                    <Label fx:id="password" alignment="CENTER_RIGHT" prefHeight="25.0" text="Password"/>
+                </VBox>
+                <VBox alignment="CENTER_LEFT" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
+                    <TextField fx:id="usernameField" prefHeight="25.0">
+                        <VBox.margin>
+                            <Insets right="30.0"/>
+                        </VBox.margin>
+                    </TextField>
+                    <PasswordField fx:id="passwordField" prefHeight="25.0">
+                        <VBox.margin>
+                            <Insets right="30.0"/>
+                        </VBox.margin>
+                    </PasswordField>
+                </VBox>
             </HBox>
-                <HBox alignment="CENTER" prefHeight="10.0" VBox.vgrow="NEVER">
-                    <children>
-                        <Label fx:id="error" alignment="TOP_CENTER" text="Incorrect username or password" textFill="RED"
-                               visible="false">
-                            <HBox.margin>
-                                <Insets bottom="10.0" top="5.0"/>
-                            </HBox.margin>
-                        </Label>
-                    </children>
-                </HBox>
-                <HBox alignment="BOTTOM_RIGHT" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
-                    <children>
-                        <Label fx:id="loc" text="Location: ">
-                            <HBox.margin>
-                                <Insets left="10.0"/>
-                            </HBox.margin>
-                        </Label>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="exitButton" cancelButton="true" mnemonicParsing="false" onAction="#exit"
-                                prefWidth="80.0" text="Exit"/>
-                        <Button fx:id="submitButton" defaultButton="true" mnemonicParsing="false" onAction="#submit"
-                                prefWidth="80.0" text="Submit"/>
-                    </children>
-               <VBox.margin>
-                  <Insets bottom="10.0" right="10.0" />
-               </VBox.margin>
+            <HBox alignment="CENTER" prefHeight="10.0" VBox.vgrow="NEVER">
+                <Label fx:id="error" alignment="TOP_CENTER" text="Incorrect username or password" textFill="RED"
+                       visible="false">
+                    <HBox.margin>
+                        <Insets bottom="10.0" top="5.0"/>
+                    </HBox.margin>
+                </Label>
             </HBox>
-         </children>
-      </VBox>
+            <HBox alignment="BOTTOM_RIGHT" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                <VBox.margin>
+                    <Insets bottom="10.0" right="10.0"/>
+                </VBox.margin>
+                <Label fx:id="loc" text="Location: ">
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
+                </Label>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="exitButton" cancelButton="true" mnemonicParsing="false" onAction="#exit"
+                        prefWidth="80.0" text="Exit"/>
+                <Button fx:id="submitButton" defaultButton="true" mnemonicParsing="false" onAction="#submit"
+                        prefWidth="80.0" text="Submit"/>
+            </HBox>
+        </VBox>
    </center>
 </BorderPane>

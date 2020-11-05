@@ -17,50 +17,48 @@
             fx:controller="scheduler.ContactReportController">
    <center>
       <VBox BorderPane.alignment="CENTER">
-         <children>
-            <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
-               <columns>
-                  <TableColumn prefWidth="60.0" text="ID">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="idProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="150.0" text="Title">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="titleProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="152.0" text="Description">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="descriptionProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="152.0" text="Type">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="typeProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="152.0" text="Start">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="startProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="152.0" text="End">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="endProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-                  <TableColumn prefWidth="60.0" text="Cust ID">
-                     <cellValueFactory>
-                        <PropertyValueFactory property="customerIdProp"/>
-                     </cellValueFactory>
-                  </TableColumn>
-               </columns>
-            </TableView>
-         </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
          </BorderPane.margin>
+         <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
+            <columns>
+               <TableColumn prefWidth="60.0" text="ID">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="idProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="150.0" text="Title">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="titleProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="152.0" text="Description">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="descriptionProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="152.0" text="Type">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="typeProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="152.0" text="Start">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="startProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="152.0" text="End">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="endProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+               <TableColumn prefWidth="60.0" text="Cust ID">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="customerIdProp"/>
+                  </cellValueFactory>
+               </TableColumn>
+            </columns>
+         </TableView>
       </VBox>
    </center>
    <bottom>
@@ -68,17 +66,15 @@
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
          </BorderPane.margin>
-         <children>
-            <Label prefHeight="25.0" text="Contact:">
-               <HBox.margin>
-                  <Insets right="10.0"/>
-               </HBox.margin>
-            </Label>
-            <ComboBox fx:id="contactBox" onAction="#updateTable" prefWidth="200.0"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="close" alignment="CENTER" mnemonicParsing="false" onAction="#close" prefWidth="60.0"
-                    text="Close"/>
-         </children>
+         <Label prefHeight="25.0" text="Contact:">
+            <HBox.margin>
+               <Insets right="10.0"/>
+            </HBox.margin>
+         </Label>
+         <ComboBox fx:id="contactBox" onAction="#updateTable" prefWidth="200.0"/>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Button fx:id="closeButton" alignment="CENTER" mnemonicParsing="false" onAction="#close" prefWidth="60.0"
+                 text="Close"/>
       </HBox>
    </bottom>
 </BorderPane>

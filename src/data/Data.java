@@ -5,21 +5,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import scheduler.Main;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class Data {
-
 
     public static List<User> userList = new ArrayList<>();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
@@ -27,6 +24,7 @@ public class Data {
     public static ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
     public static ObservableList<Division> divisionList = FXCollections.observableArrayList();
     public static ObservableList<Contact> contactList = FXCollections.observableArrayList();
+    private static String loginActivity = "login_activity.txt";
 
     private static Connection conn;
 
@@ -269,7 +267,7 @@ public class Data {
     }
 
     /**
-     * Extracts a single contact name from the contact table in the database
+     * Extracts a single contact name from contactList
      *
      * @param id The contact ID to be searched with
      * @return The contact name
@@ -284,7 +282,7 @@ public class Data {
     }
 
     /**
-     * Extracts a single contact ID from the contact table in the database
+     * Extracts a single contact ID from contactList
      *
      * @param name The contact name to be searched with
      * @return The contact ID
@@ -293,6 +291,21 @@ public class Data {
         for (Contact contact : contactList) {
             if (contact.getName().equals(name)) {
                 return contact.getId();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Extracts a single customer ID from customerList
+     *
+     * @param name The contact name to be searched with
+     * @return The contact ID
+     */
+    public static int getCustomerID(String name) {
+        for (Customer customer : customerList) {
+            if (customer.getName().equals(name)) {
+                return customer.getId();
             }
         }
         return 0;
@@ -462,12 +475,47 @@ public class Data {
     }
 
     /**
-     * Extracts an ArrayList of appointments for a specified customer
+     * Extracts all appointments for a specified customer
+     *
+     * @param customerID The customer ID to search with
+     * @return ObservableArrayList of appointments
+     */
+    public static ObservableList<Appointment> getAppointmentsForCustomer(int customerID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.TITLE + ", " +
+                     Appointment.DESCRIPTION + ", " + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
+                     ", " + Appointment.CONTACT_ID + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE +
+                     " custs ON appts." + Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." +
+                     Customer.ID + "=" + customerID)) {
+
+            ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+            while (results.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setId(results.getInt(Appointment.ID));
+                appointment.setTitle(results.getString(Appointment.TITLE));
+                appointment.setDescription(results.getString(Appointment.DESCRIPTION));
+                appointment.setType(results.getString(Appointment.TYPE));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointment.setContactId(results.getInt(Appointment.CONTACT_ID));
+
+                appointments.add(appointment);
+            }
+            return appointments;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to find appointments for customer: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts an ArrayList of appointment times for a specified customer
      *
      * @param customerID The customer ID to search with
      * @return ArrayList of appointments that only has values for title, start, and end
      */
-    public static ArrayList<Appointment> getAppointmentsForCustomer(int customerID) {
+    public static ArrayList<Appointment> getAppointmentDatesForCustomer(int customerID) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.TITLE + ", " + Appointment.START + ", " +
                      Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE + " custs ON appts." +
@@ -484,7 +532,7 @@ public class Data {
             return appointments;
 
         } catch (SQLException e) {
-            System.out.println("Failed to find appointments for customer: " + e.getMessage());
+            System.out.println("Failed to find appointment times for customer: " + e.getMessage());
             return null;
         }
     }
@@ -518,7 +566,7 @@ public class Data {
     }
 
     /**
-     * Extracts an ArrayList of appointments for a specified contact
+     * Extracts all appointments for a specified contact
      *
      * @param contactID The contact ID to search with
      * @return ArrayList of appointments
@@ -577,7 +625,6 @@ public class Data {
         }
     }
 
-
     /**
      * Extracts the month and count of each appointment from the database
      *
@@ -601,6 +648,43 @@ public class Data {
         } catch (SQLException e) {
             System.out.println("Failed to extract month count: " + e.getMessage());
             return null;
+        }
+    }
+
+    public static void logActivity(String username, String password, boolean successful) {
+
+        try (FileWriter fw = new FileWriter("login_activity.txt", true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            StringBuilder sb = new StringBuilder(LocalDate.now().toString());
+            sb.append("  ").append(LocalTime.now().format(timeFormatter)).append(" ")
+                    .append(ZonedDateTime.now().format(Main.zoneFormatter));
+
+            sb.append("\tUsername: ");
+            if (!username.isEmpty()) {
+                sb.append(username);
+            } else {
+                sb.append("(none)");
+            }
+
+            sb.append("    Password: ");
+            if (!password.isEmpty()) {
+                sb.append(password);
+            } else {
+                sb.append("(none)");
+            }
+
+            sb.append("    Successful: ");
+            if (successful) {
+                sb.append("Yes");
+            } else {
+                sb.append("No");
+            }
+            out.println(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
