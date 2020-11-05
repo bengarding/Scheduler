@@ -19,7 +19,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("appointment.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         if (Locale.getDefault().getLanguage().equals("fr")) {
             primaryStage.setTitle(language.getString("scheduler"));
         } else {

@@ -38,11 +38,11 @@ public class Data {
         MysqlDataSource datasource = getMySQLDataSource();
         try {
             conn = datasource.getConnection();
-            getAllCustomers();
+            getAllContacts();
             getAllUsers();
+            getAllCustomers();
             getAllCountries();
             getAllAppointments();
-            getAllContacts();
             return true;
         } catch (SQLException e) {
             System.out.println("Failed loading database: " + e.getMessage());
@@ -282,6 +282,12 @@ public class Data {
         return null;
     }
 
+    /**
+     * Adds a new customer to the database. Clears the customerList and reloads it from the database
+     *
+     * @param customer The new customer to be added
+     * @return True if successful and false if not
+     */
     public static boolean newCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
             String currentUser = Main.currentUser.getUserName();
@@ -305,7 +311,7 @@ public class Data {
     /**
      * Edits an existing customer in the database with new values. Clears the customerList and reloads it from the database
      *
-     * @param customer The new customer information to be updated
+     * @param customer The edited customer information to be updated
      * @return True if successful and false if not
      */
     public static boolean editCustomer(Customer customer) {
@@ -346,6 +352,79 @@ public class Data {
     }
 
     /**
+     * Adds a new appointment to the database. Clears the appointmentList and reloads it from the database
+     *
+     * @param appointment The new appointment to be added
+     * @return True if successful and false if not
+     */
+    public static boolean newAppointment(Appointment appointment) {
+        try (Statement statement = conn.createStatement()) {
+            String currentUser = Main.currentUser.getUserName();
+
+            statement.execute("INSERT INTO " + Appointment.TABLE + " (" + Appointment.ID + ", " + Appointment.TITLE +
+                    ", " + Appointment.DESCRIPTION + ", " + Appointment.LOCATION + ", " + Appointment.TYPE + ", " +
+                    Appointment.START + ", " + Appointment.END + ", " + Appointment.CREATED_BY + ", " + Appointment.LAST_UPDATED_BY +
+                    ", " + Appointment.CUSTOMER_ID + ", " + Appointment.USER_ID + ", " + Appointment.CONTACT_ID + ") VALUES(" +
+                    appointment.getId() + ", '" + appointment.getTitle() + "', '" + appointment.getDescription() + "', '" +
+                    appointment.getLocation() + "', '" + appointment.getType() + "', '" + appointment.getStart() + "', '" +
+                    appointment.getEnd() + "', '" + currentUser + "', '" + currentUser + "', " + appointment.getCustomerId() +
+                    ", " + appointment.getUserId() + ", " + appointment.getContactId() + ")");
+
+            appointmentList.clear();
+            getAllAppointments();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to create new appointment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Edits an existing appointment in the database with new values. Clears the appointmentList and reloads it from the database
+     *
+     * @param appointment The edited appointment information to be updated
+     * @return True if successful and false if not
+     */
+    public static boolean editAppointment(Appointment appointment) {
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("UPDATE " + Appointment.TABLE + " SET " + Appointment.TITLE + "='" + appointment.getTitle() +
+                    "', " + Appointment.DESCRIPTION + "='" + appointment.getDescription() + "', " + Appointment.LOCATION +
+                    "='" + appointment.getLocation() + "', " + Appointment.TYPE + "='" + appointment.getType() + "', " +
+                    Appointment.START + "='" + appointment.getStart() + "', " + Appointment.END + "='" + appointment.getEnd() +
+                    "', " + Appointment.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Appointment.LAST_UPDATED_BY +
+                    "='" + Main.currentUser.getUserName() + "', " + Appointment.CUSTOMER_ID + "=" + appointment.getCustomerId() +
+                    ", " + Appointment.CONTACT_ID + "=" + appointment.getContactId() + ", " + Appointment.USER_ID + "=" +
+                    appointment.getUserId() + " WHERE " + Appointment.ID + "=" + appointment.getId());
+
+            appointmentList.clear();
+            getAllAppointments();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to edit appointment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an existing appointment from the database. Clears the appointmentList and reloads it from the database
+     *
+     * @param appointment The appointment to be deleted
+     * @return True if successful and false if not
+     */
+    public static boolean deleteAppointment(Appointment appointment) {
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("DELETE FROM " + Appointment.TABLE + " WHERE " + Appointment.ID + "=" + appointment.getId());
+
+            appointmentList.clear();
+            getAllAppointments();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Failed to delete appointment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Checks if any customer is related to an appointment
      *
      * @param customerID The customer ID to check against all appointments
@@ -364,19 +443,5 @@ public class Data {
             System.out.println("Failed to find match: " + e.getMessage());
         }
         return false;
-    }
-
-    public static ResultSet getAppointmentsForCustomer(int customerID) {
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.START + ", " +
-                     Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE +
-                     " custs ON appts." + Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." +
-                     Customer.ID + "=" + customerID)) {
-
-            return results;
-        } catch (SQLException e) {
-            System.out.println("Failed to find appointments for customer: " + e.getMessage());
-            return null;
-        }
     }
 }

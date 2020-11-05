@@ -43,6 +43,8 @@ public class CustomerController {
     @FXML
     private Button saveButton;
 
+    boolean customerEdit = false;
+
     public void initialize() {
         ObservableList<String> countryNames = FXCollections.observableArrayList();
         for (Country country : Data.countryList) {
@@ -134,26 +136,20 @@ public class CustomerController {
             return;
         }
         if (!isValid) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Missing Information");
-            alert.setHeaderText(null);
-            alert.setContentText("Please fill in each field");
-            alert.showAndWait();
+            Main.showAlert(Alert.AlertType.WARNING, "Mission Information", "Please fill in each field");
             return;
         }
 
         Customer customer = new Customer(Integer.parseInt(idField.getText()), nameField.getText(), addressField.getText(),
                 postalCodeField.getText(), phoneField.getText(), divisionID, countryBox.getValue());
 
-        for (Customer cust : Data.customerList) {
-            if (cust.getId() == customer.getId() && Data.editCustomer(customer)) {
-                close();
-                Main.showAlert(Alert.AlertType.INFORMATION, "Customer Edited", "Customer successfully updated");
-                return;
-            } else if (cust.getId() == customer.getId()) {
-                Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error saving to the database");
-                return;
-            }
+        if (customerEdit && Data.editCustomer(customer)) {
+            close();
+            Main.showAlert(Alert.AlertType.INFORMATION, "Customer Edited", "Customer successfully updated");
+            return;
+        } else if (customerEdit) {
+            Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error saving to the database");
+            return;
         }
 
         if (Data.newCustomer(customer)) {
@@ -177,6 +173,8 @@ public class CustomerController {
         postalCodeField.setText(customer.getPostalCode());
         countryBox.setValue(customer.getCountry());
         divisionBox.setValue(customer.getDivisionProp());
+
+        customerEdit = true;
 
         setDivisionBox();
     }

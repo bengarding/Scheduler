@@ -56,6 +56,22 @@ public class Appointment {
     public static final int INDEX_USER_ID = 13;
     public static final int INDEX_CONTACT_ID = 14;
 
+    public Appointment() {
+    }
+
+    public Appointment(int id, String title, String description, String location, String type, LocalDateTime start, LocalDateTime end, int customerId, int userId, int contactId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.type = type;
+        this.start = start;
+        this.end = end;
+        this.customerId = customerId;
+        this.userId = userId;
+        this.contactId = contactId;
+    }
+
     public int getId() {
         return id;
     }
@@ -215,5 +231,21 @@ public class Appointment {
 
     public SimpleStringProperty contactPropProperty() {
         return contactProp;
+    }
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", location='" + location + '\'' +
+                ", type='" + type + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                ", customerId=" + customerId +
+                ", userId=" + userId +
+                ", contactId=" + contactId +
+                '}';
     }
 }

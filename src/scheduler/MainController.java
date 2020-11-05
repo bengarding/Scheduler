@@ -39,7 +39,7 @@ public class MainController {
     private MenuBar menuBar;
 
     public void initialize() {
-        datePicker.setValue(LocalDate.of(2020, 6, 1));
+        datePicker.setValue(LocalDate.now());
         radioSelected();
         customerTable.setItems(Data.customerList);
         customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -176,13 +176,12 @@ public class MainController {
                 Main.showAlert(Alert.AlertType.INFORMATION, "No Appointment Selected", "Please select an appointment to edit");
             } else {
                 try {
-                    CustomerController controller = newWindow("appointment", "Edit Appointment").getController();
-//                    controller.editAppointment(selectedAppointment);
+                    AppointmentController controller = newWindow("appointment", "Edit Appointment").getController();
+                    controller.editAppointment(selectedAppointment);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
@@ -195,19 +194,35 @@ public class MainController {
         if (customerTab.isSelected()) {
             Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
             if (selectedCustomer == null) {
-                Main.showAlert(Alert.AlertType.INFORMATION, "No Customer Selected", "Please select a customer to delete");
+                Main.showAlert(Alert.AlertType.INFORMATION, "No Customer Selected", "Please select a " +
+                        "customer to delete");
             } else if (!Data.safeToDelete(selectedCustomer.getId())) {
-                Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting " + selectedCustomer.getName() +
-                        ". Please make sure that the customer is not associated with any appointments before deleting.");
+                Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting " +
+                        selectedCustomer.getName() + ". Please make sure that the customer is not associated with any " +
+                        "appointments before deleting.");
             } else {
                 if (Data.deleteCustomer(selectedCustomer)) {
                     Main.showAlert(Alert.AlertType.INFORMATION, "Customer Deleted", selectedCustomer.getName() +
                             " deleted from the database");
                 } else {
-                    Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting from the database");
+                    Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting " +
+                            "from the database");
                 }
             }
         } else {
+            Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+            if (selectedAppointment == null) {
+                Main.showAlert(Alert.AlertType.INFORMATION, "No Appointment Selected", "Please select an " +
+                        "appointment to delete");
+            } else {
+                if (Data.deleteAppointment(selectedAppointment)) {
+                    Main.showAlert(Alert.AlertType.INFORMATION, "Appointment Deleted", selectedAppointment.getTitle() +
+                            " deleted from the database");
+                } else {
+                    Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting " +
+                            "from the database");
+                }
+            }
 
         }
     }

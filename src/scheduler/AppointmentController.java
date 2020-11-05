@@ -89,9 +89,10 @@ public class AppointmentController {
     Instant endTimePicked;
     boolean customerIDExists;
     boolean userIDExists;
+    boolean appointmentEdit = false;
 
-    private final LocalTime endTimeEST = LocalTime.of(22, 01);
-    private final LocalTime startTimeEST = LocalTime.of(07, 59);
+    private final LocalTime endTimeEST = LocalTime.of(22, 1);
+    private final LocalTime startTimeEST = LocalTime.of(7, 59);
     private final ZoneId utcZone = ZoneId.of("UTC");
     private final ZoneId estZone = ZoneId.of("US/Eastern");
     private final ZoneId localZone = ZoneId.of(TimeZone.getDefault().getID());
@@ -114,6 +115,8 @@ public class AppointmentController {
 
         startDatePicker.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
+                endDatePicker.setValue(startDatePicker.getValue());
+                endDatePicked = startDatePicker.getValue();
                 validateStartDate();
             }
         });
@@ -199,7 +202,6 @@ public class AppointmentController {
         }
         startDateError.setVisible(false);
 
-
         Instant allowedStartTime = ZonedDateTime.of(startDatePicked, startTimeEST, estZone).toInstant();
         Instant allowedEndTime = ZonedDateTime.of(startDatePicked, endTimeEST, estZone).toInstant();
 
@@ -247,7 +249,6 @@ public class AppointmentController {
             return false;
         }
         endDateError.setVisible(false);
-
 
         Instant allowedStartTime = ZonedDateTime.of(endDatePicked, startTimeEST, estZone).toInstant();
         Instant allowedEndTime = ZonedDateTime.of(endDatePicked, endTimeEST, estZone).toInstant();
@@ -436,6 +437,28 @@ public class AppointmentController {
         return true;
     }
 
+    public void editAppointment(Appointment appointment) {
+        idField.setText(appointment.getIdProp());
+        titleField.setText(appointment.getTitle());
+        typeField.setText(appointment.getType());
+        locationField.setText(appointment.getLocation());
+        startDatePicker.setValue(appointment.getStart().toLocalDate());
+        startTimeField.setText(appointment.getStart().toLocalTime().toString());
+        endDatePicker.setValue(appointment.getEnd().toLocalDate());
+        endTimeField.setText(appointment.getEnd().toLocalTime().toString());
+        customerIDField.setText(appointment.getCustomerIdProp());
+        userIDField.setText(String.valueOf(appointment.getUserId()));
+        contactBox.setValue(appointment.getContactProp());
+        descriptionArea.setText(appointment.getDescription());
+
+        startTimePicked = ZonedDateTime.of(appointment.getStart(), localZone).toInstant();
+        endTimePicked = ZonedDateTime.of(appointment.getEnd(), localZone).toInstant();
+        startDatePicked = startDatePicker.getValue();
+        endDatePicked = endDatePicker.getValue();
+
+        appointmentEdit = true;
+    }
+
     /**
      * Closes the window without saving
      */
@@ -448,7 +471,36 @@ public class AppointmentController {
     @FXML
     private void save() {
         if (validateAll()) {
+            LocalDateTime start = LocalDateTime.ofInstant(startTimePicked, utcZone);
+            LocalDateTime end = LocalDateTime.ofInstant(endTimePicked, utcZone);
 
+            int contactID = 0;
+            for (Contact contact : Data.contactList) {
+                if (contact.getName().equals(contactBox.getValue())) {
+                    contactID = contact.getId();
+                    break;
+                }
+            }
+
+            Appointment appointment = new Appointment(Integer.parseInt(idField.getText()), titleField.getText(),
+                    descriptionArea.getText(), locationField.getText(), typeField.getText(), start, end,
+                    Integer.parseInt(customerIDField.getText()), Integer.parseInt(userIDField.getText()), contactID);
+
+            if (appointmentEdit && Data.editAppointment(appointment)) {
+                close();
+                Main.showAlert(Alert.AlertType.INFORMATION, "Appointment Edited", "Appointment successfully updated");
+                return;
+            } else if (appointmentEdit) {
+                Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error saving to the database");
+                return;
+            }
+
+            if (Data.newAppointment(appointment)) {
+                close();
+                Main.showAlert(Alert.AlertType.INFORMATION, "Appointment Added", "Appointment successfully added to the database");
+            } else {
+                Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error saving to the database");
+            }
         }
     }
 }
