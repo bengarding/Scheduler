@@ -18,6 +18,7 @@ public class Appointment {
     private int customerId;
     private int userId;
     private int contactId;
+    private int typeCount;
 
     private SimpleStringProperty idProp;
     private SimpleStringProperty titleProp;
@@ -161,6 +162,14 @@ public class Appointment {
         this.contactProp = new SimpleStringProperty(Data.getContactName(contactId));
     }
 
+    public int getTypeCount() {
+        return typeCount;
+    }
+
+    public void setTypeCount(int typeCount) {
+        this.typeCount = typeCount;
+    }
+
     public String getIdProp() {
         return idProp.get();
     }
@@ -233,19 +242,4 @@ public class Appointment {
         return contactProp;
     }
 
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", location='" + location + '\'' +
-                ", type='" + type + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                ", customerId=" + customerId +
-                ", userId=" + userId +
-                ", contactId=" + contactId +
-                '}';
-    }
 }

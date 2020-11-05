@@ -19,12 +19,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
-        if (Locale.getDefault().getLanguage().equals("fr")) {
-            primaryStage.setTitle(language.getString("scheduler"));
-        } else {
-            primaryStage.setTitle("Scheduler");
-        }
+        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        primaryStage.setTitle(language.getString("scheduler"));
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
@@ -50,7 +46,6 @@ public class Main extends Application {
 
 //        String date = String.valueOf(UTCToLocalZDT.toLocalDate());
 //        System.out.println(String.valueOf(UTCToLocalZDT.toLocalDate()) + " " + String.valueOf(UTCToLocalZDT.toLocalTime())); // for sql
-
 
         Data.open();
         launch(args);

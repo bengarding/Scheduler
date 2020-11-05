@@ -3,6 +3,7 @@ package scheduler;
 import data.Appointment;
 import data.Customer;
 import data.Data;
+import data.Report;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
@@ -15,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainController {
@@ -224,6 +226,112 @@ public class MainController {
                 }
             }
 
+        }
+    }
+
+    /**
+     * Extracts the count of each unique appointment type from the database and displays the results in an alert
+     */
+    @FXML
+    private void typeReport() {
+        ArrayList<Report> types = Data.getTypeReport();
+        StringBuilder sb = new StringBuilder("Total appointment count by type: \n");
+
+        if (types != null) {
+            int longestType = 0;
+            int tabs = 0;
+
+            for (Report type : types) {
+                if (type.getType().length() > longestType) {
+                    longestType = type.getType().length();
+                }
+            }
+
+            for (Report type : types) {
+                sb.append("\n").append(type.getType()).append(":");
+
+                if (longestType % ((type.getType().length() - 1)) == 0) {
+                    tabs = longestType / type.getType().length();
+                } else if (longestType == type.getType().length()) {
+                    tabs = 0;
+                } else {
+                    tabs = longestType / (type.getType().length() - 1);
+                }
+
+                sb.append("\t".repeat(Math.max(0, tabs + 1)));
+                sb.append(type.getCount());
+            }
+            Main.showAlert(Alert.AlertType.INFORMATION, "Type Count Report", sb.toString());
+        }
+    }
+
+    /**
+     * Extracts the count of each appointment by month from the database and displays the results in an alert
+     */
+    @FXML
+    private void monthReport() {
+        ArrayList<Report> months = Data.getMonthReport();
+        StringBuilder sb = new StringBuilder("Total appointment count by month: \n");
+
+        if (months != null) {
+            for (Report month : months) {
+                String currentMonth;
+                System.out.println(month.getMonth());
+                switch (month.getMonth()) {
+                    case 1:
+                        currentMonth = "January:\t\t";
+                        break;
+                    case 2:
+                        currentMonth = "February:\t\t";
+                        break;
+                    case 3:
+                        currentMonth = "March:\t\t";
+                        break;
+                    case 4:
+                        currentMonth = "April:\t\t";
+                        break;
+                    case 5:
+                        currentMonth = "May:\t\t\t";
+                        break;
+                    case 6:
+                        currentMonth = "June:\t\t";
+                        break;
+                    case 7:
+                        currentMonth = "July:\t\t\t";
+                        break;
+                    case 8:
+                        currentMonth = "August:\t\t";
+                        break;
+                    case 9:
+                        currentMonth = "September:\t";
+                        break;
+                    case 10:
+                        currentMonth = "October:\t\t";
+                        break;
+                    case 11:
+                        currentMonth = "November:\t";
+                        break;
+                    case 12:
+                        currentMonth = "December:\t";
+                        break;
+                    default:
+                        currentMonth = "";
+                }
+                sb.append("\n").append(currentMonth).append(month.getCount());
+            }
+            Main.showAlert(Alert.AlertType.INFORMATION, "Month Count Report", sb.toString());
+        }
+    }
+
+    /**
+     * Opens contactReport.fxml
+     */
+    @FXML
+    private void contactReport() {
+        try {
+            newWindow("contactReport", "Contact Appointment Report");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

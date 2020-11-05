@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -270,7 +271,7 @@ public class Data {
     /**
      * Extracts a single contact name from the contact table in the database
      *
-     * @param id The contact ED to be searched with
+     * @param id The contact ID to be searched with
      * @return The contact name
      */
     public static String getContactName(int id) {
@@ -280,6 +281,21 @@ public class Data {
             }
         }
         return null;
+    }
+
+    /**
+     * Extracts a single contact ID from the contact table in the database
+     *
+     * @param name The contact name to be searched with
+     * @return The contact ID
+     */
+    public static int getContactID(String name) {
+        for (Contact contact : contactList) {
+            if (contact.getName().equals(name)) {
+                return contact.getId();
+            }
+        }
+        return 0;
     }
 
     /**
@@ -459,16 +475,16 @@ public class Data {
 
             ArrayList<Appointment> appointments = new ArrayList<>();
             while (results.next()) {
-                Appointment appt = new Appointment();
-                appt.setTitle(results.getString("Title"));
-                appt.setStart(results.getTimestamp("Start"));
-                appt.setEnd(results.getTimestamp("End"));
-                appointments.add(appt);
+                Appointment appointment = new Appointment();
+                appointment.setTitle(results.getString("Title"));
+                appointment.setStart(results.getTimestamp("Start"));
+                appointment.setEnd(results.getTimestamp("End"));
+                appointments.add(appointment);
             }
             return appointments;
 
         } catch (SQLException e) {
-            System.out.println("Failed to find appointments: " + e.getMessage());
+            System.out.println("Failed to find appointments for customer: " + e.getMessage());
             return null;
         }
     }
@@ -487,16 +503,103 @@ public class Data {
 
             ArrayList<Appointment> appointments = new ArrayList<>();
             while (results.next()) {
-                Appointment appt = new Appointment();
-                appt.setId(results.getInt(Appointment.ID));
-                appt.setStart(results.getTimestamp(Appointment.START));
-                appt.setEnd(results.getTimestamp(Appointment.END));
-                appointments.add(appt);
+                Appointment appointment = new Appointment();
+                appointment.setId(results.getInt(Appointment.ID));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointments.add(appointment);
             }
             return appointments;
 
         } catch (SQLException e) {
-            System.out.println("Failed to find appointments: " + e.getMessage());
+            System.out.println("Failed to find appointments for user: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts an ArrayList of appointments for a specified contact
+     *
+     * @param contactID The contact ID to search with
+     * @return ArrayList of appointments
+     */
+    public static ObservableList<Appointment> getAppointmentsForContact(int contactID) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.TITLE + ", " +
+                     Appointment.DESCRIPTION + ", " + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
+                     ", " + Appointment.CUSTOMER_ID + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Contact.TABLE +
+                     " contact ON appts." + Appointment.CONTACT_ID + " = contact." + Contact.ID + " WHERE contact." +
+                     Contact.ID + "=" + contactID)) {
+
+            ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+            while (results.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setId(results.getInt(Appointment.ID));
+                appointment.setTitle(results.getString(Appointment.TITLE));
+                appointment.setDescription(results.getString(Appointment.DESCRIPTION));
+                appointment.setType(results.getString(Appointment.TYPE));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointment.setCustomerId(results.getInt(Appointment.CUSTOMER_ID));
+
+                appointments.add(appointment);
+            }
+            return appointments;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to find appointments for contact: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts the name and count of each unique appointment type from the database
+     *
+     * @return ArrayList of results
+     */
+    public static ArrayList<Report> getTypeReport() {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT DISTINCT " + Appointment.TYPE + ", COUNT(" + Appointment.TYPE +
+                     ") AS Count FROM " + Appointment.TABLE + " GROUP BY " + Appointment.TYPE)) {
+
+            ArrayList<Report> reports = new ArrayList<>();
+            while (results.next()) {
+                Report report = new Report();
+                report.setType(results.getString(Appointment.TYPE));
+                report.setCount(results.getInt("Count"));
+                reports.add(report);
+            }
+            return reports;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to extract type count: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * Extracts the month and count of each appointment from the database
+     *
+     * @return ArrayList of results
+     */
+    public static ArrayList<Report> getMonthReport() {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT MONTH(" + Appointment.START + ") AS Month, COUNT(*) AS Count FROM " +
+                     Appointment.TABLE + " WHERE YEAR(" + Appointment.START + ") = '" + LocalDate.now().getYear() +
+                     "' GROUP BY MONTH(" + Appointment.START + ")")) {
+
+            ArrayList<Report> reports = new ArrayList<>();
+            while (results.next()) {
+                Report report = new Report();
+                report.setMonth(results.getInt("Month"));
+                report.setCount(results.getInt("Count"));
+                reports.add(report);
+            }
+            return reports;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to extract month count: " + e.getMessage());
             return null;
         }
     }

@@ -39,21 +39,13 @@ public class LoginController {
      * Initialized the login window. If the Locale is set to French, everything is translated into French.
      */
     public void initialize() {
-
-        if (Locale.getDefault().getLanguage().equals("fr")) {
-            username.setText(Main.language.getString("username"));
-            password.setText(Main.language.getString("password"));
-            String translate = Main.language.getString("incorrect") + " " + Main.language.getString("username") + " " +
-                    Main.language.getString("or") + " " + Main.language.getString("password");
-            error.setText(translate);
-            translate = Main.language.getString("location") + ": ";
-            System.out.println(translate);
-            loc.setText(translate);
-            submitButton.setText(Main.language.getString("submit"));
-            exitButton.setText(Main.language.getString("exit"));
-        }
+        username.setText(Main.language.getString("username"));
+        password.setText(Main.language.getString("password"));
+        error.setText(Main.language.getString("error"));
+        loc.setText(Main.language.getString("location"));
+        submitButton.setText(Main.language.getString("submit"));
+        exitButton.setText(Main.language.getString("exit"));
         loc.setText(loc.getText().concat(Locale.getDefault().getDisplayCountry()));
-
     }
 
     /**
@@ -63,6 +55,7 @@ public class LoginController {
      */
     @FXML
     private void submit() {
+
         for (User user : Data.userList) {
             if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
                 Main.currentUser = user;
@@ -85,28 +78,37 @@ public class LoginController {
                         for (Appointment appointment : appointments) {
                             if (appointment.getStart().isAfter(LocalDateTime.now()) && appointment.getStart().isBefore(LocalDateTime.now().plusMinutes(15))) {
                                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M-d-u");
-                                String message = "You have an appointment starting soon: \nID: " + appointment.getId() +
-                                        "\nDate: " + appointment.getStart().toLocalDate().format(dateFormatter) + "\nTime: " +
-                                        appointment.getStart().toLocalTime() + " - " + appointment.getEnd().toLocalTime();
-                                Main.showAlert(Alert.AlertType.INFORMATION, "Upcoming Appointment", message);
+                                String message = Main.language.getString("upcoming_appointment_message") + ": \nID: " + appointment.getId() +
+                                        "\n" + Main.language.getString("date") + ": " + appointment.getStart().toLocalDate().format(dateFormatter) +
+                                        "\n" + Main.language.getString("time") + ": " + appointment.getStart().toLocalTime() +
+                                        " - " + appointment.getEnd().toLocalTime();
+                                Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("upcoming_appointment"), message);
                                 upcomingAppointments = true;
                                 break;
                             }
                         }
                     }
                     if (!upcomingAppointments) {
-                        Main.showAlert(Alert.AlertType.INFORMATION, "No Upcoming Appointments",
-                                "There are no appointments scheduled in the next 15 minutes");
+                        Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("no_upcoming_appointments"),
+                                Main.language.getString("no_upcoming_appointments_message"));
                     }
+                    return;
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                break;
-            } else {
+            } else if (user.getUserName().equals(usernameField.getText())) {
                 error.setVisible(true);
+
+                String message = Main.language.getString("incorrect_password_for") + " " + usernameField.getText();
+                Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("incorrect_password"), message);
+                return;
             }
+
         }
+        String message = Main.language.getString("username") + " '" + usernameField.getText() + "' " +
+                Main.language.getString("not_found") + ".";
+        Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("user_not_found"), message);
     }
 
     /**
