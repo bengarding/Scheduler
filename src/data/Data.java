@@ -16,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * The Data class is in charge of connecting to the database and executing SQL statements. It also holds the values
+ * for lists that are used throughout the application.
+ *
+ * @author Ben Garding
+ */
 public class Data {
 
     public static List<User> userList = new ArrayList<>();
@@ -24,16 +30,13 @@ public class Data {
     public static ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
     public static ObservableList<Division> divisionList = FXCollections.observableArrayList();
     public static ObservableList<Contact> contactList = FXCollections.observableArrayList();
-    private static String loginActivity = "login_activity.txt";
 
     private static Connection conn;
 
     /**
      * Tries to establish a connection with the database and throws an exception if it fails
-     *
-     * @return true if successful and false if unsuccessful
      */
-    public static boolean open() {
+    public static void open() {
         MysqlDataSource datasource = getMySQLDataSource();
         try {
             conn = datasource.getConnection();
@@ -42,10 +45,8 @@ public class Data {
             getAllCustomers();
             getAllCountries();
             getAllAppointments();
-            return true;
         } catch (SQLException e) {
             System.out.println("Failed loading database: " + e.getMessage());
-            return false;
         }
     }
 
@@ -75,7 +76,6 @@ public class Data {
      * Extracts all appointments from the database and stores them into a static ObservableArrayList
      */
     public static void getAllAppointments() {
-
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Appointment.TABLE)) {
 
@@ -94,9 +94,8 @@ public class Data {
 
                 appointmentList.add(appointment);
             }
-
         } catch (SQLException e) {
-            System.out.println("Creating appointmentList failed: " + e.getMessage());
+            System.out.println("Failed to extract appointments: " + e.getMessage());
         }
     }
 
@@ -104,7 +103,6 @@ public class Data {
      * Extracts all customers from the database and stores them into a static ObservableArrayList
      */
     public static void getAllCustomers() {
-
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Customer.TABLE)) {
 
@@ -119,9 +117,8 @@ public class Data {
 
                 customerList.add(customer);
             }
-
         } catch (SQLException e) {
-            System.out.println("Creating customerList failed: " + e.getMessage());
+            System.out.println("Failed to extract customers: " + e.getMessage());
         }
     }
 
@@ -167,7 +164,6 @@ public class Data {
      * Extracts all users from the database and stores them into a static ArrayList
      */
     public static void getAllUsers() {
-
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + User.TABLE)) {
 
@@ -179,9 +175,8 @@ public class Data {
 
                 userList.add(user);
             }
-
         } catch (SQLException e) {
-            System.out.println("Creating userList failed: " + e.getMessage());
+            System.out.println("Failed to extract users: " + e.getMessage());
         }
     }
 
@@ -189,13 +184,14 @@ public class Data {
      * Clears the current divisionList and then extracts all the divisions from the database for a specified country
      * and stores them into a static ObservableArrayList
      *
-     * @param country The country to be searched with
+     * @param country The country name to be searched with
      */
     public static void getAllDivisions(String country) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT *  FROM " + Division.TABLE +
                      " WHERE " + Country.ID + "=(SELECT " + Country.ID + " FROM " + Country.TABLE +
                      " WHERE " + Country.NAME + "='" + country + "')")) {
+
             divisionList.clear();
             while (results.next()) {
                 Division division = new Division();
@@ -204,7 +200,6 @@ public class Data {
 
                 divisionList.add(division);
             }
-
         } catch (SQLException e) {
             System.out.println("Failed to extract divisions: " + e.getMessage());
         }
@@ -220,6 +215,7 @@ public class Data {
         try (Statement statement = conn.createStatement();
              ResultSet result = statement.executeQuery("SELECT " + Division.NAME + " FROM " + Division.TABLE +
                      " WHERE " + Division.ID + "=" + id)) {
+
             result.next();
             return result.getString(1);
         } catch (SQLException e) {
@@ -238,6 +234,7 @@ public class Data {
         try (Statement statement = conn.createStatement();
              ResultSet result = statement.executeQuery("SELECT " + Division.ID + " FROM " + Division.TABLE +
                      " WHERE " + Division.NAME + "='" + name + "'")) {
+
             result.next();
             return result.getInt(1);
         } catch (SQLException e) {
@@ -319,6 +316,7 @@ public class Data {
      */
     public static boolean newCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
+
             String currentUser = Main.currentUser.getUserName();
 
             statement.execute("INSERT INTO " + Customer.TABLE + " (" + Customer.ID + ", " + Customer.NAME +
@@ -338,13 +336,14 @@ public class Data {
     }
 
     /**
-     * Edits an existing customer in the database with new values. Clears the customerList and reloads it from the database
+     * Updates an existing customer in the database with new values. Clears the customerList and reloads it from the database
      *
      * @param customer The edited customer information to be updated
      * @return True if successful and false if not
      */
     public static boolean editCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
+
             statement.execute("UPDATE " + Customer.TABLE + " SET " + Customer.NAME + "='" + customer.getName() +
                     "', " + Customer.ADDRESS + "='" + customer.getAddress() + "', " + Customer.POSTAL_CODE +
                     "='" + customer.getPostalCode() + "', " + Customer.PHONE + "='" + customer.getPhone() + "', " +
@@ -369,6 +368,7 @@ public class Data {
      */
     public static boolean deleteCustomer(Customer customer) {
         try (Statement statement = conn.createStatement()) {
+
             statement.execute("DELETE FROM " + Customer.TABLE + " WHERE " + Customer.ID + "=" + customer.getId());
 
             customerList.clear();
@@ -416,6 +416,7 @@ public class Data {
      */
     public static boolean editAppointment(Appointment appointment) {
         try (Statement statement = conn.createStatement()) {
+
             statement.execute("UPDATE " + Appointment.TABLE + " SET " + Appointment.TITLE + "='" + appointment.getTitle() +
                     "', " + Appointment.DESCRIPTION + "='" + appointment.getDescription() + "', " + Appointment.LOCATION +
                     "='" + appointment.getLocation() + "', " + Appointment.TYPE + "='" + appointment.getType() + "', " +
@@ -442,6 +443,7 @@ public class Data {
      */
     public static boolean deleteAppointment(Appointment appointment) {
         try (Statement statement = conn.createStatement()) {
+
             statement.execute("DELETE FROM " + Appointment.TABLE + " WHERE " + Appointment.ID + "=" + appointment.getId());
 
             appointmentList.clear();
@@ -464,6 +466,7 @@ public class Data {
              ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + Appointment.TABLE + " appts INNER JOIN " +
                      Customer.TABLE + " custs ON appts." + Customer.ID + " = custs." + Customer.ID +
                      " WHERE custs." + Customer.ID + "=" + customerID)) {
+
             results.next();
             if (results.getInt(1) == 0) {
                 return true;
@@ -502,7 +505,6 @@ public class Data {
                 appointments.add(appointment);
             }
             return appointments;
-
         } catch (SQLException e) {
             System.out.println("Failed to find appointments for customer: " + e.getMessage());
             return null;
@@ -510,7 +512,7 @@ public class Data {
     }
 
     /**
-     * Extracts an ArrayList of appointment times for a specified customer
+     * Extracts all appointment times for a specified customer
      *
      * @param customerID The customer ID to search with
      * @return ArrayList of appointments that only has values for title, start, and end
@@ -538,12 +540,12 @@ public class Data {
     }
 
     /**
-     * Extracts an ArrayList of appointments for a specified user
+     * Extracts all appointment times for a specified user
      *
      * @param userID The user ID to search with
      * @return ArrayList of appointments that only has values for title and start
      */
-    public static ArrayList<Appointment> getAppointmentsForUser(int userID) {
+    public static ArrayList<Appointment> getAppointmentDatesForUser(int userID) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.START + ", " +
                      Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + User.TABLE + " user ON appts." +
@@ -558,7 +560,6 @@ public class Data {
                 appointments.add(appointment);
             }
             return appointments;
-
         } catch (SQLException e) {
             System.out.println("Failed to find appointments for user: " + e.getMessage());
             return null;
@@ -593,7 +594,6 @@ public class Data {
                 appointments.add(appointment);
             }
             return appointments;
-
         } catch (SQLException e) {
             System.out.println("Failed to find appointments for contact: " + e.getMessage());
             return null;
@@ -644,15 +644,20 @@ public class Data {
                 reports.add(report);
             }
             return reports;
-
         } catch (SQLException e) {
             System.out.println("Failed to extract month count: " + e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Saves all login activity to login_activity.txt
+     *
+     * @param username   The username that was entered in the login form
+     * @param password   The password that was entered in the login form
+     * @param successful True if successful login and false if unsuccessful
+     */
     public static void logActivity(String username, String password, boolean successful) {
-
         try (FileWriter fw = new FileWriter("login_activity.txt", true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
@@ -668,14 +673,12 @@ public class Data {
             } else {
                 sb.append("(none)");
             }
-
             sb.append("    Password: ");
             if (!password.isEmpty()) {
                 sb.append(password);
             } else {
                 sb.append("(none)");
             }
-
             sb.append("    Successful: ");
             if (successful) {
                 sb.append("Yes");
@@ -687,5 +690,4 @@ public class Data {
             e.printStackTrace();
         }
     }
-
 }

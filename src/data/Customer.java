@@ -2,6 +2,11 @@ package data;
 
 import javafx.beans.property.SimpleStringProperty;
 
+/**
+ * The Customer class creates a customer and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class Customer {
 
     private int id;

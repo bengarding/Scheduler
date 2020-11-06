@@ -10,8 +10,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The CustomerController class is the controller for customer.fxml
+ *
+ * @author Ben Garding
+ */
 public class CustomerController {
-
     @FXML
     private TextField idField;
     @FXML
@@ -40,20 +44,27 @@ public class CustomerController {
     private Label divisionError;
     @FXML
     private Button cancelButton;
-    @FXML
-    private Button saveButton;
 
     boolean customerEdit = false;
 
+    /**
+     * The countryBox is loaded with the names of all countries. The idField is loaded with the next integer value after
+     * the last customer, and will used when creating a new customer. idField is disabled so the user cannot alter the
+     * value. Listeners are created on every input control. These listeners run input validations.
+     */
     public void initialize() {
         ObservableList<String> countryNames = FXCollections.observableArrayList();
         for (Country country : Data.countryList) {
             countryNames.add(country.getName());
         }
         countryBox.setItems(countryNames);
-
         idField.setText(String.valueOf(Data.customerList.get(Data.customerList.size() - 1).getId() + 1));
 
+        /**
+         * The following lambdas are created to replace anonymous classes from being created for each listener. This
+         * is possible because each anonymous class is an interface with only one method. Lambdas cannot be used if an
+         * interface has more than one method. Lambdas help to make code more concise and readable.
+         */
         countryBox.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
                 setDivisionBox();
@@ -95,7 +106,7 @@ public class CustomerController {
     }
 
     /**
-     * Closes the window without saving
+     * Closes the window
      */
     @FXML
     private void close() {
@@ -103,6 +114,10 @@ public class CustomerController {
         stage.close();
     }
 
+    /**
+     * If all controls are valid, saves a new customer to the database. If the customerEdit boolean is set to true,
+     * then an existing customer is updated rather than a new one being created
+     */
     @FXML
     private void save() {
         boolean isValid = true;
@@ -161,7 +176,9 @@ public class CustomerController {
     }
 
     /**
-     * Loads customer data into customer.fxml when a customer is to be edited
+     * This method is called when the user selects a customer to edit from main.fxml. All of the existing values are
+     * loaded into the appropriate controls. The customerEdit boolean is set to true so that upon saving, the
+     * customer is edited instead of a new one being created.
      *
      * @param customer The customer to load the data from
      */
@@ -191,5 +208,4 @@ public class CustomerController {
         divisionBox.setItems(divisionNames);
         divisionBox.autosize();
     }
-
 }

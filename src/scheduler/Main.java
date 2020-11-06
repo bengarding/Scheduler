@@ -27,34 +27,13 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
-//        ZoneId.getAvailableZoneIds().stream().filter(c -> c.contains("UTC")).sorted().forEach(System.out::println);
-//        LocalDate parisDate = LocalDate.of(2020, 10, 10);
-//        LocalTime estStartTime = LocalTime.of(13,0);
-//        ZoneId parisZoneId = ZoneId.of("Europe/Paris");
-//        ZonedDateTime parisZDT = ZonedDateTime.of(parisDate, estStartTime, parisZoneId);
-//        ZoneId localZoneId = ZoneId.of(TimeZone.getDefault().getID());
-//
-//        Instant parisToUTCInstant = parisZDT.toInstant();
-//        ZonedDateTime parisToLocalZDT = parisZDT.withZoneSameLocal(localZoneId);
-//        ZonedDateTime UTCToLocalZDT = parisToUTCInstant.atZone(localZoneId);
-//
-//        System.out.println("local: " + ZonedDateTime.now());
-//        System.out.println("paris: " + parisZDT);
-//        System.out.println("paris->utc: " + parisToUTCInstant);
-//        System.out.println("utc->local: " + UTCToLocalZDT);
-//        System.out.println("utc->local date only: " + UTCToLocalZDT.toLocalDate());
-
-//        String date = String.valueOf(UTCToLocalZDT.toLocalDate());
-//        System.out.println(String.valueOf(UTCToLocalZDT.toLocalDate()) + " " + String.valueOf(UTCToLocalZDT.toLocalTime())); // for sql
-
         Data.open();
         launch(args);
     }
 
     /**
-     * Shows an alert
+     * Shows an alert with the passed content
      *
      * @param type        The type of alert to show
      * @param title       The title to display

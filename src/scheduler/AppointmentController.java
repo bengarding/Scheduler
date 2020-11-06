@@ -12,8 +12,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
+/**
+ * The AppointmentController class is the controller for appointment.fxml
+ *
+ * @author Ben Garding
+ */
 public class AppointmentController {
-
     @FXML
     private TextField idField;
     @FXML
@@ -38,8 +42,6 @@ public class AppointmentController {
     private DatePicker endDatePicker;
     @FXML
     private ComboBox<String> contactBox;
-    @FXML
-    private Button saveButton;
     @FXML
     private Button cancelButton;
     @FXML
@@ -97,16 +99,26 @@ public class AppointmentController {
     private final ZoneId estZone = ZoneId.of("US/Eastern");
     private final ZoneId localZone = ZoneId.of(TimeZone.getDefault().getID());
 
-    public void initialize() {
 
+    /**
+     * The contactBox is loaded with the names of all contacts. The idField is loaded with the next integer value after
+     * the last appointment, and will used when creating a new appointment. idField is disabled so the user cannot
+     * alter the value. Listeners are created on every input control except for descriptionArea. These listeners run
+     * input validations.
+     */
+    public void initialize() {
         ObservableList<String> contactList = FXCollections.observableArrayList();
         for (Contact contact : Data.contactList) {
             contactList.add(contact.getName());
         }
         contactBox.setItems(contactList);
-
         idField.setText(String.valueOf(Data.appointmentList.get(Data.appointmentList.size() - 1).getId() + 1));
 
+        /**
+         * The following lambdas are created to replace anonymous classes from being created for each listener. This
+         * is possible because each anonymous class is an interface with only one method. Lambdas cannot be used if an
+         * interface has more than one method. Lambdas help to make code more concise and readable.
+         */
         titleField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
                 titleError.setVisible(titleField.getText().isEmpty());
@@ -234,7 +246,7 @@ public class AppointmentController {
 
     /**
      * Performs validation checks for the end time entered. Validates for proper format, if it's within EST business
-     * hours, and if there are any conflicting appointments for the customer ID entered
+     * hours, and if there are any conflicting appointments for the customer ID entered.
      *
      * @return True if valid and false if invalid
      */
@@ -277,6 +289,7 @@ public class AppointmentController {
             outsideHours();
             return false;
         }
+
         if (customerIDExists && startTimePicked != null && endTimePicked != null) {
             ArrayList<Appointment> appointments = Data.getAppointmentDatesForCustomer(Integer.parseInt(customerIDField.getText()));
             if (appointments != null) {
@@ -284,7 +297,6 @@ public class AppointmentController {
 
                     Instant startAppointment = ZonedDateTime.of(appointment.getStart().minusMinutes(1), localZone).toInstant();
                     Instant endAppointment = ZonedDateTime.of(appointment.getEnd().plusMinutes(1), localZone).toInstant();
-
 
                     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M-d-u");
 
@@ -307,10 +319,9 @@ public class AppointmentController {
 
     /**
      * Displays a custom alert if the entered start or end times are outside of EST business hours. The acceptable
-     * business hours are shown in local time.
+     * business hours are also shown in local time.
      */
     private void outsideHours() {
-
         String message = "You have selected a time that is outside of normal business hours: 8:00-22:00 EST. The business hours in your " +
                 "time zone are " + ZonedDateTime.of(LocalDate.now(), startTimeEST.plusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
                 "-" + ZonedDateTime.of(LocalDate.now(), endTimeEST.minusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
@@ -406,9 +417,9 @@ public class AppointmentController {
     }
 
     /**
-     * Validates all of the fields
+     * Validates all of the controls
      *
-     * @return True if all fields are valid and false if any are invalid
+     * @return True if all controls are valid and false if any are invalid
      */
     private boolean validateAll() {
         if (titleField.getText().isEmpty()) {
@@ -439,6 +450,13 @@ public class AppointmentController {
         return true;
     }
 
+    /**
+     * This method is called when the user selects an appointment to edit from main.fxml. All of the existing values are
+     * loaded into the appropriate controls. The appointmentEdit boolean is set to true so that upon saving, the
+     * appointment is edited instead of a new one being created.
+     *
+     * @param appointment The existing appointment to be edited
+     */
     public void editAppointment(Appointment appointment) {
         idField.setText(appointment.getIdProp());
         titleField.setText(appointment.getTitle());
@@ -462,7 +480,7 @@ public class AppointmentController {
     }
 
     /**
-     * Closes the window without saving
+     * Closes the window
      */
     @FXML
     private void close() {
@@ -470,6 +488,10 @@ public class AppointmentController {
         stage.close();
     }
 
+    /**
+     * If all controls are valid, saves a new appointment to the database. If the appointmentEdit boolean is set to
+     * true, then an existing appointment is updated rather than a new one being created
+     */
     @FXML
     private void save() {
         if (validateAll()) {

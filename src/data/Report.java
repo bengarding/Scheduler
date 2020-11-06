@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * The Report class is used to store information when creating reports for appointments by month and type
+ *
+ * @author Ben Garding
+ */
 public class Report {
 
     private String type;

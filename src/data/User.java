@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * The User class creates a user and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class User {
 
     private int id;

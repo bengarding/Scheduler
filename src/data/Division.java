@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * The Division class creates a division and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class Division {
     private int id;
     private String name;

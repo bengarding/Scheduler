@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * The Country class creates a country and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class Country {
     private int id;
     private String name;

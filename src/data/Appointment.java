@@ -1,11 +1,15 @@
 package data;
-
 import javafx.beans.property.SimpleStringProperty;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
+/**
+ * The Appointment class creates an appointment and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class Appointment {
 
     private int id;
@@ -18,7 +22,6 @@ public class Appointment {
     private int customerId;
     private int userId;
     private int contactId;
-    private int typeCount;
 
     private SimpleStringProperty idProp;
     private SimpleStringProperty titleProp;
@@ -38,7 +41,6 @@ public class Appointment {
     public static final String TYPE = "Type";
     public static final String START = "Start";
     public static final String END = "End";
-    public static final String CREATE_DATE = "Create_Date";
     public static final String CREATED_BY = "Created_By";
     public static final String LAST_UPDATE = "Last_Update";
     public static final String LAST_UPDATED_BY = "Last_Updated_By";
@@ -162,14 +164,6 @@ public class Appointment {
         this.contactProp = new SimpleStringProperty(Data.getContactName(contactId));
     }
 
-    public int getTypeCount() {
-        return typeCount;
-    }
-
-    public void setTypeCount(int typeCount) {
-        this.typeCount = typeCount;
-    }
-
     public String getIdProp() {
         return idProp.get();
     }
@@ -241,5 +235,4 @@ public class Appointment {
     public SimpleStringProperty contactPropProperty() {
         return contactProp;
     }
-
 }

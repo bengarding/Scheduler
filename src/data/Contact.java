@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * The Contact class creates a contact and stores static final variables used for SQL statements
+ *
+ * @author Ben Garding
+ */
 public class Contact {
 
     private int id;
@@ -24,5 +29,4 @@ public class Contact {
     public void setName(String name) {
         this.name = name;
     }
-
 }

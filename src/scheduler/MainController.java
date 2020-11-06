@@ -19,10 +19,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * The MainController class is the controller for main.fxml
+ *
+ * @author Ben Garding
+ */
 public class MainController {
-
-    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Data.appointmentList));
-
     @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
@@ -34,12 +36,17 @@ public class MainController {
     @FXML
     private DatePicker datePicker;
     @FXML
-    private Tab appointmentsTab;
-    @FXML
     private Tab customerTab;
     @FXML
     private MenuBar menuBar;
 
+    private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Data.appointmentList));
+
+    /**
+     * The datePicker is set to today's date. radioSelected() is called to load appointments into appointmentTable.
+     * customerTable is loaded with the customerList from the Data class. A listener is created to show datePicker and
+     * the radio buttons when the appointment tab is selected and hide them when the customer tab is selected.
+     */
     public void initialize() {
         datePicker.setValue(LocalDate.now());
         radioSelected();
@@ -67,6 +74,12 @@ public class MainController {
     @FXML
     private void radioSelected() {
         if (monthRadio.isSelected()) {
+            /**
+             * This lambda creates a Predicate that tests if each Appointment's start value in appointmentsFiltered is
+             * after the start of the month of the selected date in datePicker and before the end of the month of the
+             * selected date in datePicker. If the test returns true, then that Appointment is displayed in
+             * appointmentTable Otherwise it is not.
+             */
             appointmentsFiltered.predicateProperty().bind(Bindings.createObjectBinding(() -> {
                         LocalDate monthStart = datePicker.getValue().minusDays(datePicker.getValue().getDayOfMonth() - 1);
                         LocalDate monthEnd = monthStart.plusMonths(1).minusDays(1);
@@ -75,6 +88,12 @@ public class MainController {
                     }, datePicker.valueProperty()
             ));
         } else {
+            /**
+             * This lambda creates a Predicate that tests if each Appointment's start value in appointmentsFiltered is
+             * after the start of the week of the selected date in datePicker and before the end of the week of the
+             * selected date in datePicker. If the test returns true, then that Appointment is displayed in
+             * appointmentTable. Otherwise it is not.
+             */
             appointmentsFiltered.predicateProperty().bind(Bindings.createObjectBinding(() -> {
                         DayOfWeek dayOfWeek = datePicker.getValue().getDayOfWeek();
                         int dayInt = 0;
@@ -131,7 +150,7 @@ public class MainController {
     }
 
     /**
-     * Calls newWindow to open the customer window
+     * Calls newWindow() to open customer.fxml
      */
     @FXML
     private void newCustomer() {
@@ -143,7 +162,7 @@ public class MainController {
     }
 
     /**
-     * Calls newWindow to open the appointment window
+     * Calls newWindow() to open appointment.fxml
      */
     @FXML
     private void newAppointment() {
@@ -225,12 +244,11 @@ public class MainController {
                             "from the database");
                 }
             }
-
         }
     }
 
     /**
-     * Extracts the count of each unique appointment type from the database and displays the results in an alert
+     * Extracts the count of each unique appointment type from the database and displays the results in an alert window
      */
     @FXML
     private void typeReport() {
@@ -266,7 +284,7 @@ public class MainController {
     }
 
     /**
-     * Extracts the count of each appointment by month from the database and displays the results in an alert
+     * Extracts the count of each appointment by month from the database and displays the results in an alert window
      */
     @FXML
     private void monthReport() {
@@ -323,7 +341,7 @@ public class MainController {
     }
 
     /**
-     * Opens contactReport.fxml
+     * Calls newWindow() to open contactReport.fxml
      */
     @FXML
     private void contactReport() {
@@ -335,7 +353,7 @@ public class MainController {
     }
 
     /**
-     * Opens customerReport.fxml
+     * Calls newWindow() to open customerReport.fxml
      */
     @FXML
     private void customerReport() {
@@ -365,6 +383,4 @@ public class MainController {
 
         return fxmlLoader;
     }
-
-
 }
