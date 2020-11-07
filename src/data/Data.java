@@ -22,7 +22,7 @@ import java.util.Properties;
  *
  * @author Ben Garding
  */
-public class Data {
+public abstract class Data {
 
     public static List<User> userList = new ArrayList<>();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();

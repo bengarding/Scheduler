@@ -105,6 +105,7 @@ public class AppointmentController {
      * the last appointment, and will used when creating a new appointment. idField is disabled so the user cannot
      * alter the value. Listeners are created on every input control except for descriptionArea. These listeners run
      * input validations.
+     *
      */
     public void initialize() {
         ObservableList<String> contactList = FXCollections.observableArrayList();
@@ -114,11 +115,6 @@ public class AppointmentController {
         contactBox.setItems(contactList);
         idField.setText(String.valueOf(Data.appointmentList.get(Data.appointmentList.size() - 1).getId() + 1));
 
-        /**
-         * The following lambdas are created to replace anonymous classes from being created for each listener. This
-         * is possible because each anonymous class is an interface with only one method. Lambdas cannot be used if an
-         * interface has more than one method. Lambdas help to make code more concise and readable.
-         */
         titleField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
                 titleError.setVisible(titleField.getText().isEmpty());
@@ -129,25 +125,25 @@ public class AppointmentController {
             if (aBoolean) {
                 endDatePicker.setValue(startDatePicker.getValue());
                 endDatePicked = startDatePicker.getValue();
-                validateStartDate();
+                AppointmentController.this.validateStartDate();
             }
         });
 
         endDatePicker.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
-                validateEndDate();
+                AppointmentController.this.validateEndDate();
             }
         });
 
         startTimeField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
-                validateStartTime();
+                AppointmentController.this.validateStartTime();
             }
         });
 
         endTimeField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
-                validateEndTime();
+                AppointmentController.this.validateEndTime();
             }
         });
 
@@ -166,7 +162,7 @@ public class AppointmentController {
         customerIDField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
 
             if (aBoolean) {
-                validateCustomerID();
+                AppointmentController.this.validateCustomerID();
             }
         });
 
@@ -178,7 +174,7 @@ public class AppointmentController {
 
         userIDField.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
-                validateUserID();
+                AppointmentController.this.validateUserID();
             }
         });
 

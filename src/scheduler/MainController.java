@@ -70,16 +70,11 @@ public class MainController {
     /**
      * Updates the appointment table based on the value of the date picker. Displays a month view if monthRadio is selected,
      * and week view if weekRadio is selected.
+     *
      */
     @FXML
     private void radioSelected() {
         if (monthRadio.isSelected()) {
-            /**
-             * This lambda creates a Predicate that tests if each Appointment's start value in appointmentsFiltered is
-             * after the start of the month of the selected date in datePicker and before the end of the month of the
-             * selected date in datePicker. If the test returns true, then that Appointment is displayed in
-             * appointmentTable Otherwise it is not.
-             */
             appointmentsFiltered.predicateProperty().bind(Bindings.createObjectBinding(() -> {
                         LocalDate monthStart = datePicker.getValue().minusDays(datePicker.getValue().getDayOfMonth() - 1);
                         LocalDate monthEnd = monthStart.plusMonths(1).minusDays(1);
@@ -88,12 +83,6 @@ public class MainController {
                     }, datePicker.valueProperty()
             ));
         } else {
-            /**
-             * This lambda creates a Predicate that tests if each Appointment's start value in appointmentsFiltered is
-             * after the start of the week of the selected date in datePicker and before the end of the week of the
-             * selected date in datePicker. If the test returns true, then that Appointment is displayed in
-             * appointmentTable. Otherwise it is not.
-             */
             appointmentsFiltered.predicateProperty().bind(Bindings.createObjectBinding(() -> {
                         DayOfWeek dayOfWeek = datePicker.getValue().getDayOfWeek();
                         int dayInt = 0;

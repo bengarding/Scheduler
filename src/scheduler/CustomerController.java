@@ -60,11 +60,6 @@ public class CustomerController {
         countryBox.setItems(countryNames);
         idField.setText(String.valueOf(Data.customerList.get(Data.customerList.size() - 1).getId() + 1));
 
-        /**
-         * The following lambdas are created to replace anonymous classes from being created for each listener. This
-         * is possible because each anonymous class is an interface with only one method. Lambdas cannot be used if an
-         * interface has more than one method. Lambdas help to make code more concise and readable.
-         */
         countryBox.focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (aBoolean) {
                 setDivisionBox();
