@@ -3,7 +3,7 @@ package data;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import scheduler.Main;
+import dweller.Main;
 
 import java.io.*;
 import java.sql.Connection;

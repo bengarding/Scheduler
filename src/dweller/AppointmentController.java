@@ -1,4 +1,4 @@
-package scheduler;
+package dweller;
 
 import data.*;
 import javafx.collections.FXCollections;

@@ -12,7 +12,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0"
             prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="scheduler.LoginController">
+            fx:controller="dweller.LoginController">
     <center>
         <VBox BorderPane.alignment="CENTER">
             <HBox VBox.vgrow="ALWAYS">
