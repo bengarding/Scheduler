@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author Ben Garding
  */
-public class Customer {
+public abstract class Customer {
 
     private int id;
     private String name;
@@ -16,6 +16,7 @@ public class Customer {
     private String phone;
     private int divisionId;
     private String country;
+    private String type;
 
     private SimpleStringProperty idProp;
     private SimpleStringProperty nameProp;
@@ -24,6 +25,7 @@ public class Customer {
     private SimpleStringProperty postalCodeProp;
     private SimpleStringProperty divisionProp;
     private SimpleStringProperty countryProp;
+    private SimpleStringProperty typeProp;
 
     public static final String TABLE = "customers";
     public static final String ID = "Customer_ID";
@@ -35,6 +37,9 @@ public class Customer {
     public static final String LAST_UPDATE = "Last_Update";
     public static final String LAST_UPDATED_BY = "Last_Updated_By";
     public static final String DIVISION_ID = "Division_ID";
+    public static final String TYPE = "Type";
+    public static final String HOMEOWNER = "Homeowner";
+    public static final String APARTMENT_MANAGER = "Apartment Manager";
 
     public static final int INDEX_ID = 1;
     public static final int INDEX_NAME = 2;
@@ -42,8 +47,9 @@ public class Customer {
     public static final int INDEX_POSTAL_CODE = 4;
     public static final int INDEX_PHONE = 5;
     public static final int INDEX_DIVISION_ID = 10;
+    public static final int INDEX_TYPE = 11;
 
-    public Customer(int id, String name, String address, String postalCode, String phone, int divisionId, String country) {
+    public Customer(int id, String name, String address, String postalCode, String phone, int divisionId, String country, String type) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -51,6 +57,7 @@ public class Customer {
         this.phone = phone;
         this.divisionId = divisionId;
         this.country = country;
+        this.type = type;
     }
 
     public Customer() {
@@ -175,5 +182,26 @@ public class Customer {
 
     public SimpleStringProperty countryPropProperty() {
         return countryProp;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+        this.typeProp = new SimpleStringProperty(type);
+    }
+
+    public String getTypeProp() {
+        return typeProp.get();
+    }
+
+    public SimpleStringProperty typePropProperty() {
+        return typeProp;
+    }
+
+    public void setTypeProp(String typeProp) {
+        this.typeProp.set(typeProp);
     }
 }

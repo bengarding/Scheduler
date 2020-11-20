@@ -21,7 +21,7 @@
             fx:controller="dweller.MainController">
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <Tab fx:id="appointmentsTab" closable="false" text="Appointments">
+            <Tab closable="false" text="Appointments">
                 <VBox>
                     <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
                         <columns>
@@ -86,17 +86,22 @@
                                     <PropertyValueFactory property="idProp"/>
                                 </cellValueFactory>
                             </TableColumn>
-                            <TableColumn prefWidth="236.0" text="Name">
+                            <TableColumn prefWidth="200.0" text="Name">
                                 <cellValueFactory>
                                     <PropertyValueFactory property="nameProp"/>
                                 </cellValueFactory>
                             </TableColumn>
-                            <TableColumn prefWidth="180.0" text="Phone">
+                            <TableColumn prefWidth="140.0" text="Type">
+                                <cellValueFactory>
+                                    <PropertyValueFactory property="typeProp"/>
+                                </cellValueFactory>
+                            </TableColumn>
+                            <TableColumn prefWidth="160.0" text="Phone">
                                 <cellValueFactory>
                                     <PropertyValueFactory property="phoneProp"/>
                                 </cellValueFactory>
                             </TableColumn>
-                            <TableColumn prefWidth="316.0" text="Address">
+                            <TableColumn prefWidth="230.0" text="Address">
                                 <cellValueFactory>
                                     <PropertyValueFactory property="addressProp"/>
                                 </cellValueFactory>
@@ -106,12 +111,12 @@
                                     <PropertyValueFactory property="postalCodeProp"/>
                                 </cellValueFactory>
                             </TableColumn>
-                            <TableColumn prefWidth="208.0" text="Division">
+                            <TableColumn prefWidth="200.0" text="Division">
                                 <cellValueFactory>
                                     <PropertyValueFactory property="divisionProp"/>
                                 </cellValueFactory>
                             </TableColumn>
-                            <TableColumn text="Country">
+                            <TableColumn prefWidth="90.0" text="Country">
                                 <cellValueFactory>
                                     <PropertyValueFactory property="countryProp"/>
                                 </cellValueFactory>

@@ -1,20 +1,16 @@
 package data;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
+import dweller.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import dweller.Main;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.*;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * The Data class is in charge of connecting to the database and executing SQL statements. It also holds the values
@@ -32,45 +28,26 @@ public abstract class Data {
     public static ObservableList<Contact> contactList = FXCollections.observableArrayList();
 
     private static Connection conn;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Tries to establish a connection with the database and throws an exception if it fails
      */
     public static void open() {
-        MysqlDataSource datasource = getMySQLDataSource();
+
         try {
-            conn = datasource.getConnection();
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:dweller.db");
             getAllContacts();
             getAllUsers();
             getAllCustomers();
             getAllCountries();
             getAllAppointments();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Failed loading database: " + e.getMessage());
         }
     }
 
-    /**
-     * Called by open() to establish database connection. Reads database URL and credentials from db.properties file
-     *
-     * @return MysqlDataSource object with URL and credentials stored in it
-     */
-    private static MysqlDataSource getMySQLDataSource() {
-        Properties props = new Properties();
-        FileInputStream fis;
-        MysqlDataSource mysqlDS = null;
-        try {
-            fis = new FileInputStream("src/res/db.properties");
-            props.load(fis);
-            mysqlDS = new MysqlDataSource();
-            mysqlDS.setURL(props.getProperty("MYSQL_DB_URL"));
-            mysqlDS.setUser(props.getProperty("MYSQL_DB_USERNAME"));
-            mysqlDS.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return mysqlDS;
-    }
 
     /**
      * Extracts all appointments from the database and stores them into a static ObservableArrayList
@@ -86,8 +63,8 @@ public abstract class Data {
                 appointment.setDescription(results.getString(Appointment.INDEX_DESCRIPTION));
                 appointment.setLocation(results.getString(Appointment.INDEX_LOCATION));
                 appointment.setType(results.getString(Appointment.INDEX_TYPE));
-                appointment.setStart(results.getTimestamp(Appointment.INDEX_START));
-                appointment.setEnd(results.getTimestamp(Appointment.INDEX_END));
+                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.INDEX_START)));
+                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.INDEX_END)));
                 appointment.setCustomerId(results.getInt(Appointment.INDEX_CUSTOMER_ID));
                 appointment.setUserId(results.getInt(Appointment.INDEX_USER_ID));
                 appointment.setContactId(results.getInt(Appointment.INDEX_CONTACT_ID));
@@ -107,15 +84,35 @@ public abstract class Data {
              ResultSet results = statement.executeQuery("SELECT * FROM " + Customer.TABLE)) {
 
             while (results.next()) {
-                Customer customer = new Customer();
-                customer.setId(results.getInt(Customer.INDEX_ID));
-                customer.setName(results.getString(Customer.INDEX_NAME));
-                customer.setAddress(results.getString(Customer.INDEX_ADDRESS));
-                customer.setPostalCode(results.getString(Customer.INDEX_POSTAL_CODE));
-                customer.setPhone(results.getString(Customer.INDEX_PHONE));
-                customer.setDivisionId(results.getInt(Customer.INDEX_DIVISION_ID));
+                if (results.getString(Customer.TYPE).equals(Customer.HOMEOWNER)) {
+                    Homeowner homeowner = getHomeowner(results.getInt(Customer.INDEX_ID));
 
-                customerList.add(customer);
+                    if (homeowner != null) {
+                        homeowner.setId(results.getInt(Customer.INDEX_ID));
+                        homeowner.setName(results.getString(Customer.INDEX_NAME));
+                        homeowner.setAddress(results.getString(Customer.INDEX_ADDRESS));
+                        homeowner.setPostalCode(results.getString(Customer.INDEX_POSTAL_CODE));
+                        homeowner.setPhone(results.getString(Customer.INDEX_PHONE));
+                        homeowner.setDivisionId(results.getInt(Customer.INDEX_DIVISION_ID));
+                        homeowner.setType(Customer.HOMEOWNER);
+
+                        customerList.add(homeowner);
+                    }
+                } else if (results.getString(Customer.TYPE).equals(ApartmentManager.APARTMENT_MANAGER)) {
+                    ApartmentManager apartmentManager = getApartmentManager(results.getInt(Customer.INDEX_ID));
+
+                    if (apartmentManager != null) {
+                        apartmentManager.setId(results.getInt(Customer.INDEX_ID));
+                        apartmentManager.setName(results.getString(Customer.INDEX_NAME));
+                        apartmentManager.setAddress(results.getString(Customer.INDEX_ADDRESS));
+                        apartmentManager.setPostalCode(results.getString(Customer.INDEX_POSTAL_CODE));
+                        apartmentManager.setPhone(results.getString(Customer.INDEX_PHONE));
+                        apartmentManager.setDivisionId(results.getInt(Customer.INDEX_DIVISION_ID));
+                        apartmentManager.setType(Customer.APARTMENT_MANAGER);
+
+                        customerList.add(apartmentManager);
+                    }
+                }
             }
         } catch (SQLException e) {
             System.out.println("Failed to extract customers: " + e.getMessage());
@@ -177,6 +174,51 @@ public abstract class Data {
             }
         } catch (SQLException e) {
             System.out.println("Failed to extract users: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Extracts a single homeowner from the database
+     *
+     * @param customerId The customer ID of the homeowner
+     * @return The homeowner
+     */
+    private static Homeowner getHomeowner(int customerId) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID +
+                     "=" + customerId)) {
+
+            Homeowner homeowner = new Homeowner();
+            homeowner.setDoors(results.getInt(Homeowner.DOORS));
+            homeowner.setWindows(results.getInt(Homeowner.WINDOWS));
+            homeowner.setRooms(results.getInt(Homeowner.ROOMS));
+            homeowner.setYearBuilt(results.getInt(Homeowner.YEAR_BUILT));
+            return homeowner;
+        } catch (SQLException e) {
+            System.out.println("Failed to extract homeowner: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts a single apartment from the database
+     *
+     * @param customerId The customer ID of the apartment
+     * @return The apartment
+     */
+    private static ApartmentManager getApartmentManager(int customerId) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID +
+                     "=" + customerId)) {
+
+            ApartmentManager apartmentManager = new ApartmentManager();
+            apartmentManager.setBuildings(results.getInt(ApartmentManager.BUILDINGS));
+            apartmentManager.setUnits(results.getInt(ApartmentManager.UNITS));
+
+            return apartmentManager;
+        } catch (SQLException e) {
+            System.out.println("Failed to extract apartment: " + e.getMessage());
+            return null;
         }
     }
 
@@ -309,25 +351,22 @@ public abstract class Data {
     }
 
     /**
-     * Adds a new customer to the database. Clears the customerList and reloads it from the database
+     * Adds a new customer to the database.
      *
      * @param customer The new customer to be added
      * @return True if successful and false if not
      */
     public static boolean newCustomer(Customer customer) {
-        try (Statement statement = conn.createStatement()) {
-
+        try {
+            Statement statement = conn.createStatement();
             String currentUser = Main.currentUser.getUserName();
 
             statement.execute("INSERT INTO " + Customer.TABLE + " (" + Customer.ID + ", " + Customer.NAME +
                     ", " + Customer.ADDRESS + ", " + Customer.POSTAL_CODE + ", " + Customer.PHONE + ", " +
-                    Customer.CREATED_BY + ", " + Customer.LAST_UPDATED_BY + ", " + Customer.DIVISION_ID +
+                    Customer.CREATED_BY + ", " + Customer.LAST_UPDATED_BY + ", " + Customer.DIVISION_ID + ", " + Customer.TYPE +
                     ") VALUES(" + customer.getId() + ", '" + customer.getName() + "', '" + customer.getAddress() + "', '" +
                     customer.getPostalCode() + "', '" + customer.getPhone() + "', '" + currentUser + "', '" + currentUser +
-                    "', " + customer.getDivisionId() + ")");
-
-            customerList.clear();
-            getAllCustomers();
+                    "', " + customer.getDivisionId() + ", '" + customer.getType() + "')");
             return true;
         } catch (SQLException e) {
             System.out.println("Failed to create new customer: " + e.getMessage());
@@ -336,23 +375,79 @@ public abstract class Data {
     }
 
     /**
-     * Updates an existing customer in the database with new values. Clears the customerList and reloads it from the database
+     * First, a new customer is added to the database and if that is successful, then a new homeowner is added.
+     * Clears the customerList and reloads it from the database.
+     *
+     * @param customer The homeowner to be added
+     * @return True if successful and false if not
+     */
+    public static boolean newHomeowner(Customer customer) {
+        try {
+            Statement statement = conn.createStatement();
+            String currentUser = Main.currentUser.getUserName();
+
+            if (newCustomer(customer)) {
+                statement.execute("INSERT INTO " + Homeowner.TABLE + " (" + Homeowner.ID + ", " + Homeowner.YEAR_BUILT + ", " +
+                        Homeowner.WINDOWS + ", " + Homeowner.DOORS + ", " + Homeowner.ROOMS + ", " + Homeowner.CREATED_BY + ", " +
+                        Homeowner.LAST_UPDATED_BY + ") VALUES (" + customer.getId() + ", " + ((Homeowner) customer).getYearBuilt() +
+                        ", " + ((Homeowner) customer).getWindows() + ", " + ((Homeowner) customer).getDoors() + ", " +
+                        ((Homeowner) customer).getRooms() + ", '" + currentUser + "', '" + currentUser + "')");
+
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to create new homeowner: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * First, a new customer is added to the database and if that is successful, then a new apartment is added.
+     * Clears the customerList and reloads it from the database.
+     *
+     * @param customer The apartment to be added
+     * @return True if successful and false if not
+     */
+    public static boolean newApartmentManager(Customer customer) {
+        try {
+            Statement statement = conn.createStatement();
+            String currentUser = Main.currentUser.getUserName();
+
+            if (newCustomer(customer)) {
+                statement.execute("INSERT INTO " + ApartmentManager.TABLE + " (" + ApartmentManager.ID + ", " + ApartmentManager.UNITS + ", " +
+                        ApartmentManager.BUILDINGS + ", " + ApartmentManager.CREATED_BY + ", " + ApartmentManager.LAST_UPDATED_BY + ") VALUES (" +
+                        customer.getId() + ", " + ((ApartmentManager) customer).getUnits() + ", " + ((ApartmentManager) customer).getBuildings() +
+                        ", '" + currentUser + "', '" + currentUser + "')");
+
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to create new apartment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Updates an existing customer in the database with new values.
      *
      * @param customer The edited customer information to be updated
      * @return True if successful and false if not
      */
     public static boolean editCustomer(Customer customer) {
-        try (Statement statement = conn.createStatement()) {
-
+        try {
+            Statement statement = conn.createStatement();
             statement.execute("UPDATE " + Customer.TABLE + " SET " + Customer.NAME + "='" + customer.getName() +
                     "', " + Customer.ADDRESS + "='" + customer.getAddress() + "', " + Customer.POSTAL_CODE +
                     "='" + customer.getPostalCode() + "', " + Customer.PHONE + "='" + customer.getPhone() + "', " +
-                    Customer.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Customer.LAST_UPDATED_BY +
+                    Customer.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Customer.LAST_UPDATED_BY +
                     "='" + Main.currentUser.getUserName() + "', " + Customer.DIVISION_ID + "="
                     + customer.getDivisionId() + " WHERE " + Customer.ID + "=" + customer.getId());
-
-            customerList.clear();
-            getAllCustomers();
             return true;
         } catch (SQLException e) {
             System.out.println("Failed to edit customer: " + e.getMessage());
@@ -361,21 +456,120 @@ public abstract class Data {
     }
 
     /**
-     * Deletes an existing customer from the database. Clears the customerList and reloads it from the database
+     * Updates an existing customer first, and if that is successful, then updates the homeowner.
+     * Clears the customerList and reloads it from the database
+     *
+     * @param customer The homeowner to be updated
+     * @return True if successful and false if not
+     */
+    public static boolean editHomeowner(Customer customer) {
+        try {
+            Statement statement = conn.createStatement();
+            if (editCustomer(customer)) {
+                statement.execute("UPDATE " + Homeowner.TABLE + " SET " + Homeowner.YEAR_BUILT + "=" + ((Homeowner) customer).getYearBuilt() +
+                        ", " + Homeowner.WINDOWS + "=" + ((Homeowner) customer).getWindows() + ", " + Homeowner.DOORS + "=" +
+                        ((Homeowner) customer).getDoors() + ", " + Homeowner.ROOMS + "=" + ((Homeowner) customer).getRooms() + ", " +
+                        Homeowner.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Homeowner.LAST_UPDATED_BY +
+                        "='" + Main.currentUser.getUserName() + "' WHERE " + Homeowner.ID + "=" + customer.getId());
+
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to edit homeowner: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Updates an existing customer first, and if that is successful, then updates the apartment.
+     * Clears the customerList and reloads it from the database
+     *
+     * @param customer The apartment to be updated
+     * @return True if successful and false if not
+     */
+    public static boolean editApartmentManager(Customer customer) {
+        try {
+            Statement statement = conn.createStatement();
+            if (editCustomer(customer)) {
+                statement.execute("UPDATE " + ApartmentManager.TABLE + " SET " + ApartmentManager.UNITS + "=" + ((ApartmentManager) customer).getUnits() +
+                        ", " + ApartmentManager.BUILDINGS + "=" + ((ApartmentManager) customer).getBuildings() + ", " + ApartmentManager.LAST_UPDATE +
+                        "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + ApartmentManager.LAST_UPDATED_BY +
+                        "='" + Main.currentUser.getUserName() + "' WHERE " + ApartmentManager.ID + "=" + customer.getId());
+
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to edit apartment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an existing customer from the database.
      *
      * @param customer The customer to be deleted
      * @return True if successful and false if not
      */
     public static boolean deleteCustomer(Customer customer) {
-        try (Statement statement = conn.createStatement()) {
-
+        try {
+            Statement statement = conn.createStatement();
             statement.execute("DELETE FROM " + Customer.TABLE + " WHERE " + Customer.ID + "=" + customer.getId());
 
-            customerList.clear();
-            getAllCustomers();
             return true;
         } catch (SQLException e) {
             System.out.println("Failed to delete customer: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an existing customer from the data base, then deletes the homeowner if it was successful
+     * Clears the customerList and reloads it from the database
+     *
+     * @param customer The homeowner to be deleted
+     * @return True is successul and false if not
+     */
+    public static boolean deleteHomeowner(Customer customer) {
+        try {
+            if (deleteCustomer(customer)) {
+                Statement statement = conn.createStatement();
+                statement.execute("DELETE FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID + "=" + customer.getId());
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to delete homeowner: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an existing customer from the data base, then deletes the apartment manager if it was successful
+     * Clears the customerList and reloads it from the database
+     *
+     * @param customer The apartment manager to be deleted
+     * @return True is successul and false if not
+     */
+    public static boolean deleteApartmentManager(Customer customer) {
+        try {
+            if (deleteCustomer(customer)) {
+                Statement statement = conn.createStatement();
+                statement.execute("DELETE FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID + "=" + customer.getId());
+                customerList.clear();
+                getAllCustomers();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Failed to delete apartment manager: " + e.getMessage());
             return false;
         }
     }
@@ -387,7 +581,8 @@ public abstract class Data {
      * @return True if successful and false if not
      */
     public static boolean newAppointment(Appointment appointment) {
-        try (Statement statement = conn.createStatement()) {
+        try {
+            Statement statement = conn.createStatement();
             String currentUser = Main.currentUser.getUserName();
 
             statement.execute("INSERT INTO " + Appointment.TABLE + " (" + Appointment.ID + ", " + Appointment.TITLE +
@@ -395,8 +590,8 @@ public abstract class Data {
                     Appointment.START + ", " + Appointment.END + ", " + Appointment.CREATED_BY + ", " + Appointment.LAST_UPDATED_BY +
                     ", " + Appointment.CUSTOMER_ID + ", " + Appointment.USER_ID + ", " + Appointment.CONTACT_ID + ") VALUES(" +
                     appointment.getId() + ", '" + appointment.getTitle() + "', '" + appointment.getDescription() + "', '" +
-                    appointment.getLocation() + "', '" + appointment.getType() + "', '" + appointment.getStart() + "', '" +
-                    appointment.getEnd() + "', '" + currentUser + "', '" + currentUser + "', " + appointment.getCustomerId() +
+                    appointment.getLocation() + "', '" + appointment.getType() + "', '" + formatter.format(appointment.getStart()) + "', '" +
+                    formatter.format(appointment.getEnd()) + "', '" + currentUser + "', '" + currentUser + "', " + appointment.getCustomerId() +
                     ", " + appointment.getUserId() + ", " + appointment.getContactId() + ")");
 
             appointmentList.clear();
@@ -415,13 +610,13 @@ public abstract class Data {
      * @return True if successful and false if not
      */
     public static boolean editAppointment(Appointment appointment) {
-        try (Statement statement = conn.createStatement()) {
-
+        try {
+            Statement statement = conn.createStatement();
             statement.execute("UPDATE " + Appointment.TABLE + " SET " + Appointment.TITLE + "='" + appointment.getTitle() +
                     "', " + Appointment.DESCRIPTION + "='" + appointment.getDescription() + "', " + Appointment.LOCATION +
                     "='" + appointment.getLocation() + "', " + Appointment.TYPE + "='" + appointment.getType() + "', " +
-                    Appointment.START + "='" + appointment.getStart() + "', " + Appointment.END + "='" + appointment.getEnd() +
-                    "', " + Appointment.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Appointment.LAST_UPDATED_BY +
+                    Appointment.START + "='" + formatter.format(appointment.getStart()) + "', " + Appointment.END + "='" + formatter.format(appointment.getEnd()) +
+                    "', " + Appointment.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Appointment.LAST_UPDATED_BY +
                     "='" + Main.currentUser.getUserName() + "', " + Appointment.CUSTOMER_ID + "=" + appointment.getCustomerId() +
                     ", " + Appointment.CONTACT_ID + "=" + appointment.getContactId() + ", " + Appointment.USER_ID + "=" +
                     appointment.getUserId() + " WHERE " + Appointment.ID + "=" + appointment.getId());
@@ -442,8 +637,8 @@ public abstract class Data {
      * @return True if successful and false if not
      */
     public static boolean deleteAppointment(Appointment appointment) {
-        try (Statement statement = conn.createStatement()) {
-
+        try {
+            Statement statement = conn.createStatement();
             statement.execute("DELETE FROM " + Appointment.TABLE + " WHERE " + Appointment.ID + "=" + appointment.getId());
 
             appointmentList.clear();
@@ -498,8 +693,8 @@ public abstract class Data {
                 appointment.setTitle(results.getString(Appointment.TITLE));
                 appointment.setDescription(results.getString(Appointment.DESCRIPTION));
                 appointment.setType(results.getString(Appointment.TYPE));
-                appointment.setStart(results.getTimestamp(Appointment.START));
-                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
+                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
                 appointment.setContactId(results.getInt(Appointment.CONTACT_ID));
 
                 appointments.add(appointment);
@@ -526,9 +721,9 @@ public abstract class Data {
             ArrayList<Appointment> appointments = new ArrayList<>();
             while (results.next()) {
                 Appointment appointment = new Appointment();
-                appointment.setTitle(results.getString("Title"));
-                appointment.setStart(results.getTimestamp("Start"));
-                appointment.setEnd(results.getTimestamp("End"));
+                appointment.setTitle(results.getString(Appointment.TITLE));
+                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
+                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
                 appointments.add(appointment);
             }
             return appointments;
@@ -555,8 +750,8 @@ public abstract class Data {
             while (results.next()) {
                 Appointment appointment = new Appointment();
                 appointment.setId(results.getInt(Appointment.ID));
-                appointment.setStart(results.getTimestamp(Appointment.START));
-                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
+                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
                 appointments.add(appointment);
             }
             return appointments;
@@ -587,8 +782,8 @@ public abstract class Data {
                 appointment.setTitle(results.getString(Appointment.TITLE));
                 appointment.setDescription(results.getString(Appointment.DESCRIPTION));
                 appointment.setType(results.getString(Appointment.TYPE));
-                appointment.setStart(results.getTimestamp(Appointment.START));
-                appointment.setEnd(results.getTimestamp(Appointment.END));
+                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
+                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
                 appointment.setCustomerId(results.getInt(Appointment.CUSTOMER_ID));
 
                 appointments.add(appointment);
@@ -647,47 +842,6 @@ public abstract class Data {
         } catch (SQLException e) {
             System.out.println("Failed to extract month count: " + e.getMessage());
             return null;
-        }
-    }
-
-    /**
-     * Saves all login activity to login_activity.txt
-     *
-     * @param username   The username that was entered in the login form
-     * @param password   The password that was entered in the login form
-     * @param successful True if successful login and false if unsuccessful
-     */
-    public static void logActivity(String username, String password, boolean successful) {
-        try (FileWriter fw = new FileWriter("login_activity.txt", true);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
-
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            StringBuilder sb = new StringBuilder(LocalDate.now().toString());
-            sb.append("  ").append(LocalTime.now().format(timeFormatter)).append(" ")
-                    .append(ZonedDateTime.now().format(Main.zoneFormatter));
-
-            sb.append("\tUsername: ");
-            if (!username.isEmpty()) {
-                sb.append(username);
-            } else {
-                sb.append("(none)");
-            }
-            sb.append("    Password: ");
-            if (!password.isEmpty()) {
-                sb.append(password);
-            } else {
-                sb.append("(none)");
-            }
-            sb.append("    Successful: ");
-            if (successful) {
-                sb.append("Yes");
-            } else {
-                sb.append("No");
-            }
-            out.println(sb.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

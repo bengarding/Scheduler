@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * The LoginController class is the controller for login.fxml
@@ -43,33 +42,32 @@ public class LoginController {
      * If the Locale is set to French, everything is translated into French, including all error messages.
      */
     public void initialize() {
-        username.setText(Main.language.getString("username"));
-        password.setText(Main.language.getString("password"));
-        error.setText(Main.language.getString("error"));
-        loc.setText(Main.language.getString("location"));
-        submitButton.setText(Main.language.getString("submit"));
-        exitButton.setText(Main.language.getString("exit"));
-        loc.setText(loc.getText().concat(Locale.getDefault().getDisplayCountry()));
+//        username.setText(Main.language.getString("username"));
+//        password.setText(Main.language.getString("password"));
+//        error.setText(Main.language.getString("error"));
+//        loc.setText(Main.language.getString("location"));
+//        submitButton.setText(Main.language.getString("submit"));
+//        exitButton.setText(Main.language.getString("exit"));
+//        loc.setText(loc.getText().concat(Locale.getDefault().getDisplayCountry()));
     }
 
     /**
      * When the submit button is pressed, the entered username and password are checked against the userList in the
      * Data class. If a match is found, the user data is saved in the Main class and main.fxml is opened.
-     * Otherwise, an error message is displayed. Both successful and unsuccessful are stores in login_activity.txt
+     * Otherwise, an error message is displayed.
      */
     @FXML
     private void submit() {
         for (User user : Data.userList) {
             if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
                 Main.currentUser = user;
-                Data.logActivity(usernameField.getText(), passwordField.getText(), true);
 
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader();
-                    fxmlLoader.setLocation(getClass().getResource("main.fxml"));
+                    fxmlLoader.setLocation(getClass().getResource("/fxml/main.fxml"));
                     Scene scene = new Scene(fxmlLoader.load());
                     Stage stage = new Stage();
-                    stage.setTitle("Scheduler");
+                    stage.setTitle("Dweller");
                     stage.setScene(scene);
                     stage.show();
 
@@ -102,7 +100,6 @@ public class LoginController {
                 }
             } else if (user.getUserName().equals(usernameField.getText())) {
                 error.setVisible(true);
-                Data.logActivity(usernameField.getText(), passwordField.getText(), false);
                 String message = Main.language.getString("incorrect_password_for") + " " + usernameField.getText();
                 Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("incorrect_password"), message);
                 return;
@@ -111,7 +108,6 @@ public class LoginController {
         String message = Main.language.getString("username") + " '" + usernameField.getText() + "' " +
                 Main.language.getString("not_found") + ".";
         Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("user_not_found"), message);
-        Data.logActivity(usernameField.getText(), passwordField.getText(), false);
     }
 
     /**

@@ -39,6 +39,9 @@ public class MainController {
     private Tab customerTab;
     @FXML
     private MenuBar menuBar;
+    @FXML
+    private ToggleGroup display;
+
 
     private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Data.appointmentList));
 
@@ -70,7 +73,6 @@ public class MainController {
     /**
      * Updates the appointment table based on the value of the date picker. Displays a month view if monthRadio is selected,
      * and week view if weekRadio is selected.
-     *
      */
     @FXML
     private void radioSelected() {
@@ -210,27 +212,35 @@ public class MainController {
                 Main.showAlert(Alert.AlertType.WARNING, "Deletion Error", "There was an error deleting " +
                         selectedCustomer.getName() + ". Please make sure that the customer is not associated with any " +
                         "appointments before deleting.");
-            } else {
-                if (Data.deleteCustomer(selectedCustomer)) {
-                    Main.showAlert(Alert.AlertType.INFORMATION, "Customer Deleted", selectedCustomer.getName() +
+            } else if (selectedCustomer.getType().equals(Customer.HOMEOWNER)) {
+                if (Data.deleteHomeowner(selectedCustomer)) {
+                    Main.showAlert(Alert.AlertType.INFORMATION, "Homeowner Deleted", selectedCustomer.getName() +
                             " deleted from the database");
                 } else {
                     Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting " +
                             "from the database");
                 }
-            }
-        } else {
-            Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
-            if (selectedAppointment == null) {
-                Main.showAlert(Alert.AlertType.INFORMATION, "No Appointment Selected", "Please select an " +
-                        "appointment to delete");
-            } else {
-                if (Data.deleteAppointment(selectedAppointment)) {
-                    Main.showAlert(Alert.AlertType.INFORMATION, "Appointment Deleted", selectedAppointment.getTitle() +
+            } else if (selectedCustomer.getType().equals(Customer.APARTMENT_MANAGER)) {
+                if (Data.deleteApartmentManager(selectedCustomer)) {
+                    Main.showAlert(Alert.AlertType.INFORMATION, "Apartment Manager Deleted", selectedCustomer.getName() +
                             " deleted from the database");
                 } else {
                     Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting " +
                             "from the database");
+                }
+            } else {
+                Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+                if (selectedAppointment == null) {
+                    Main.showAlert(Alert.AlertType.INFORMATION, "No Appointment Selected", "Please select an " +
+                            "appointment to delete");
+                } else {
+                    if (Data.deleteAppointment(selectedAppointment)) {
+                        Main.showAlert(Alert.AlertType.INFORMATION, "Appointment Deleted", selectedAppointment.getTitle() +
+                                " deleted from the database");
+                    } else {
+                        Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error deleting " +
+                                "from the database");
+                    }
                 }
             }
         }
@@ -363,7 +373,7 @@ public class MainController {
      */
     private FXMLLoader newWindow(String fxml, String title) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource(fxml + ".fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/fxml/" + fxml + ".fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
         stage.setTitle(title);
