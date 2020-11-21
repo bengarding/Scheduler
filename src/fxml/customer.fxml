@@ -29,7 +29,7 @@
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Address"/>
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Postal Code"/>
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Country"/>
-            <Label alignment="CENTER_RIGHT" layoutX="67.0" layoutY="230.0" prefHeight="25.0" text="Division"/>
+            <Label alignment="CENTER_RIGHT" layoutX="67.0" layoutY="230.0" prefHeight="25.0" text="State/Province"/>
         </VBox>
     </left>
     <center>
@@ -104,7 +104,7 @@
                             <ToggleGroup fx:id="customerType"/>
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="apartmentRadio" mnemonicParsing="false" onAction="#radioSelected"
+                    <RadioButton fx:id="apartmentManagerRadio" mnemonicParsing="false" onAction="#radioSelected"
                                  text="Apartment Manager" toggleGroup="$customerType"/>
                 </HBox>
                 <HBox>

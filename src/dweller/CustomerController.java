@@ -45,7 +45,7 @@ public class CustomerController {
     @FXML
     private RadioButton homeownerRadio;
     @FXML
-    private RadioButton apartmentRadio;
+    private RadioButton apartmentManagerRadio;
     @FXML
     private Label yearBuiltLabel;
     @FXML
@@ -401,9 +401,9 @@ public class CustomerController {
             windowsField.setText(String.valueOf(((Homeowner) customer).getWindows()));
             doorsField.setText(String.valueOf(((Homeowner) customer).getDoors()));
             roomsField.setText(String.valueOf(((Homeowner) customer).getRooms()));
-            apartmentRadio.setDisable(true);
+            apartmentManagerRadio.setDisable(true);
         } else {
-            apartmentRadio.setSelected(true);
+            apartmentManagerRadio.setSelected(true);
             radioSelected();
             homeownerRadio.setDisable(true);
             unitsField.setText(String.valueOf(((ApartmentManager) customer).getUnits()));

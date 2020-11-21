@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -681,7 +680,7 @@ public abstract class Data {
     public static ObservableList<Appointment> getAppointmentsForCustomer(int customerID) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.TITLE + ", " +
-                     Appointment.DESCRIPTION + ", " + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
+                     Appointment.DESCRIPTION + ", appts." + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
                      ", " + Appointment.CONTACT_ID + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE +
                      " custs ON appts." + Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." +
                      Customer.ID + "=" + customerID)) {
@@ -820,28 +819,5 @@ public abstract class Data {
         }
     }
 
-    /**
-     * Extracts the month and count of each appointment from the database
-     *
-     * @return ArrayList of results
-     */
-    public static ArrayList<Report> getMonthReport() {
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT MONTH(" + Appointment.START + ") AS Month, COUNT(*) AS Count FROM " +
-                     Appointment.TABLE + " WHERE YEAR(" + Appointment.START + ") = '" + LocalDate.now().getYear() +
-                     "' GROUP BY MONTH(" + Appointment.START + ")")) {
 
-            ArrayList<Report> reports = new ArrayList<>();
-            while (results.next()) {
-                Report report = new Report();
-                report.setMonth(results.getInt("Month"));
-                report.setCount(results.getInt("Count"));
-                reports.add(report);
-            }
-            return reports;
-        } catch (SQLException e) {
-            System.out.println("Failed to extract month count: " + e.getMessage());
-            return null;
-        }
-    }
 }

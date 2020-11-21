@@ -7,6 +7,7 @@ import data.Report;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -41,6 +42,8 @@ public class MainController {
     private MenuBar menuBar;
     @FXML
     private ToggleGroup display;
+    @FXML
+    private TextField customerSearch;
 
 
     private FilteredList<Appointment> appointmentsFiltered = new FilteredList<>(Objects.requireNonNull(Data.appointmentList));
@@ -53,8 +56,6 @@ public class MainController {
     public void initialize() {
         datePicker.setValue(LocalDate.now());
         radioSelected();
-        customerTable.setItems(Data.customerList);
-        customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         customerTab.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
@@ -62,12 +63,32 @@ public class MainController {
                 monthRadio.setVisible(false);
                 weekRadio.setVisible(false);
                 datePicker.setVisible(false);
+                customerSearch.setVisible(true);
             } else {
                 monthRadio.setVisible(true);
                 weekRadio.setVisible(true);
                 datePicker.setVisible(true);
+                customerSearch.setVisible(false);
+                customerSearch.setText("");
             }
         });
+
+        FilteredList<Customer> customerFilteredList = new FilteredList<>(Data.customerList);
+
+        customerSearch.textProperty().addListener((observableValue, s, t1) -> customerFilteredList.setPredicate(customer -> {
+            if (t1 == null || t1.isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = t1.toLowerCase();
+
+            return customer.getName().toLowerCase().contains(lowerCaseFilter);
+
+        }));
+        SortedList<Customer> customerSortedList = new SortedList<>(customerFilteredList);
+        customerSortedList.comparatorProperty().bind(customerTable.comparatorProperty());
+        customerTable.setItems(customerSortedList);
+        customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
     }
 
     /**
@@ -279,63 +300,6 @@ public class MainController {
                 sb.append(type.getCount());
             }
             Main.showAlert(Alert.AlertType.INFORMATION, "Type Count Report", sb.toString());
-        }
-    }
-
-    /**
-     * Extracts the count of each appointment by month from the database and displays the results in an alert window
-     */
-    @FXML
-    private void monthReport() {
-        ArrayList<Report> months = Data.getMonthReport();
-        StringBuilder sb = new StringBuilder("Total appointment count by month: \n");
-
-        if (months != null) {
-            for (Report month : months) {
-                String currentMonth;
-                switch (month.getMonth()) {
-                    case 1:
-                        currentMonth = "January:\t\t";
-                        break;
-                    case 2:
-                        currentMonth = "February:\t\t";
-                        break;
-                    case 3:
-                        currentMonth = "March:\t\t";
-                        break;
-                    case 4:
-                        currentMonth = "April:\t\t";
-                        break;
-                    case 5:
-                        currentMonth = "May:\t\t\t";
-                        break;
-                    case 6:
-                        currentMonth = "June:\t\t";
-                        break;
-                    case 7:
-                        currentMonth = "July:\t\t\t";
-                        break;
-                    case 8:
-                        currentMonth = "August:\t\t";
-                        break;
-                    case 9:
-                        currentMonth = "September:\t";
-                        break;
-                    case 10:
-                        currentMonth = "October:\t\t";
-                        break;
-                    case 11:
-                        currentMonth = "November:\t";
-                        break;
-                    case 12:
-                        currentMonth = "December:\t";
-                        break;
-                    default:
-                        currentMonth = "";
-                }
-                sb.append("\n").append(currentMonth).append(month.getCount());
-            }
-            Main.showAlert(Alert.AlertType.INFORMATION, "Month Count Report", sb.toString());
         }
     }
 

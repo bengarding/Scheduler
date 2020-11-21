@@ -10,10 +10,12 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
@@ -152,6 +154,9 @@
                     </HBox.margin>
                 </RadioButton>
                 <DatePicker fx:id="datePicker" showWeekNumbers="true"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="customerSearch" prefWidth="200.0" promptText="Search by Customer Name"
+                           visible="false"/>
             </HBox>
         </VBox>
     </bottom>
@@ -171,7 +176,6 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Reports">
                 <MenuItem mnemonicParsing="false" onAction="#typeReport" text="Appointments by Type"/>
-                <MenuItem mnemonicParsing="false" onAction="#monthReport" text="Appointments by Month"/>
                 <MenuItem mnemonicParsing="false" onAction="#contactReport" text="Appointments by Contact"/>
                 <MenuItem mnemonicParsing="false" onAction="#customerReport" text="Appointments by Customer"/>
             </Menu>
