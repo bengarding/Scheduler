@@ -1,4 +1,4 @@
-package dweller;
+package scheduler;
 
 import data.*;
 import javafx.collections.FXCollections;
@@ -274,24 +274,9 @@ public class CustomerController {
      * then an existing customer is updated rather than a new one being created
      */
     @FXML
-    private void save() {
-        boolean isValid = true;
-        if (nameField.getText().isEmpty()) {
-            nameError.setVisible(true);
-            isValid = false;
-        }
-        if (phoneField.getText().isEmpty()) {
-            phoneError.setVisible(true);
-            isValid = false;
-        }
-        if (addressField.getText().isEmpty()) {
-            addressError.setVisible(true);
-            isValid = false;
-        }
-        if (postalCodeField.getText().isEmpty()) {
-            postalCodeError.setVisible(true);
-            isValid = false;
-        }
+    public void save() {
+        boolean isValid;
+        isValid = validateFields(true, nameField, nameError, phoneField, phoneError, addressField, addressError, postalCodeField, postalCodeError);
         if (countryBox.getValue() == null) {
             countryError.setVisible(true);
             isValid = false;
@@ -301,22 +286,7 @@ public class CustomerController {
             isValid = false;
         }
         if (homeownerRadio.isSelected()) {
-            if (yearBuiltField.getText().isEmpty()) {
-                yearBuiltError.setVisible(true);
-                isValid = false;
-            }
-            if (windowsField.getText().isEmpty()) {
-                windowsError.setVisible(true);
-                isValid = false;
-            }
-            if (roomsField.getText().isEmpty()) {
-                roomsError.setVisible(true);
-                isValid = false;
-            }
-            if (doorsField.getText().isEmpty()) {
-                doorsError.setVisible(true);
-                isValid = false;
-            }
+            isValid = validateFields(isValid, yearBuiltField, yearBuiltError, windowsField, windowsError, roomsField, roomsError, doorsField, doorsError);
         } else {
             if (unitsField.getText().isEmpty()) {
                 unitsError.setVisible(true);
@@ -328,13 +298,14 @@ public class CustomerController {
             }
         }
 
+        if (!isValid) {
+            Main.showAlert(Alert.AlertType.WARNING, "Missing Information", "Please fill in each field");
+            return;
+        }
+
         int divisionID = Data.getDivisionId(divisionBox.getValue());
         if (divisionID == 0) {
             Main.showAlert(Alert.AlertType.WARNING, "Database Error", "There was an error connecting to the database");
-            return;
-        }
-        if (!isValid) {
-            Main.showAlert(Alert.AlertType.WARNING, "Missing Information", "Please fill in each field");
             return;
         }
 
@@ -380,6 +351,26 @@ public class CustomerController {
         }
     }
 
+    private boolean validateFields(boolean isValid, TextField nameField, Label nameError, TextField phoneField, Label phoneError, TextField addressField, Label addressError, TextField postalCodeField, Label postalCodeError) {
+        if (nameField.getText().isEmpty()) {
+            nameError.setVisible(true);
+            isValid = false;
+        }
+        if (phoneField.getText().isEmpty()) {
+            phoneError.setVisible(true);
+            isValid = false;
+        }
+        if (addressField.getText().isEmpty()) {
+            addressError.setVisible(true);
+            isValid = false;
+        }
+        if (postalCodeField.getText().isEmpty()) {
+            postalCodeError.setVisible(true);
+            isValid = false;
+        }
+        return isValid;
+    }
+
     /**
      * This method is called when the user selects a customer to edit from main.fxml. All of the existing values are
      * loaded into the appropriate controls. The customerEdit boolean is set to true so that upon saving, the
@@ -397,7 +388,7 @@ public class CustomerController {
         divisionBox.setValue(customer.getDivisionProp());
 
         if (customer.getType().equals(Customer.HOMEOWNER)) {
-            yearBuiltField.setText(String.valueOf(((Homeowner) customer).getWindows()));
+            yearBuiltField.setText(String.valueOf(((Homeowner) customer).getYearBuilt()));
             windowsField.setText(String.valueOf(((Homeowner) customer).getWindows()));
             doorsField.setText(String.valueOf(((Homeowner) customer).getDoors()));
             roomsField.setText(String.valueOf(((Homeowner) customer).getRooms()));

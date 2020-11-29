@@ -1,15 +1,21 @@
 package data;
 
-import dweller.Main;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import scheduler.Main;
 
-import java.sql.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * The Data class is in charge of connecting to the database and executing SQL statements. It also holds the values
@@ -27,31 +33,51 @@ public abstract class Data {
     public static ObservableList<Contact> contactList = FXCollections.observableArrayList();
 
     private static Connection conn;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Tries to establish a connection with the database and throws an exception if it fails
      */
     public static void open() {
-
+        MysqlDataSource datasource = getMySQLDataSource();
         try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:dweller.db");
+            conn = datasource.getConnection();
             getAllContacts();
             getAllUsers();
             getAllCustomers();
             getAllCountries();
             getAllAppointments();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println("Failed loading database: " + e.getMessage());
         }
+    }
+
+    /**
+     * Called by open() to establish database connection. Reads database URL and credentials from db.properties file
+     *
+     * @return MysqlDataSource object with URL and credentials stored in it
+     */
+    private static MysqlDataSource getMySQLDataSource() {
+        Properties props = new Properties();
+        FileInputStream fis;
+        MysqlDataSource mysqlDS = null;
+        try {
+            fis = new FileInputStream("src/res/db.properties");
+            props.load(fis);
+            mysqlDS = new MysqlDataSource();
+            mysqlDS.setURL(props.getProperty("MYSQL_DB_URL"));
+            mysqlDS.setUser(props.getProperty("MYSQL_DB_USERNAME"));
+            mysqlDS.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return mysqlDS;
     }
 
 
     /**
      * Extracts all appointments from the database and stores them into a static ObservableArrayList
      */
-    public static void getAllAppointments() {
+    private static void getAllAppointments() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Appointment.TABLE)) {
 
@@ -62,8 +88,8 @@ public abstract class Data {
                 appointment.setDescription(results.getString(Appointment.INDEX_DESCRIPTION));
                 appointment.setLocation(results.getString(Appointment.INDEX_LOCATION));
                 appointment.setType(results.getString(Appointment.INDEX_TYPE));
-                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.INDEX_START)));
-                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.INDEX_END)));
+                appointment.setStart(results.getTimestamp(Appointment.INDEX_START));
+                appointment.setEnd(results.getTimestamp(Appointment.INDEX_END));
                 appointment.setCustomerId(results.getInt(Appointment.INDEX_CUSTOMER_ID));
                 appointment.setUserId(results.getInt(Appointment.INDEX_USER_ID));
                 appointment.setContactId(results.getInt(Appointment.INDEX_CONTACT_ID));
@@ -78,7 +104,7 @@ public abstract class Data {
     /**
      * Extracts all customers from the database and stores them into a static ObservableArrayList
      */
-    public static void getAllCustomers() {
+    private static void getAllCustomers() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Customer.TABLE)) {
 
@@ -121,7 +147,7 @@ public abstract class Data {
     /**
      * Extracts all the countries from the database and stores them into a static ObservableArrayList
      */
-    public static void getAllCountries() {
+    private static void getAllCountries() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Country.TABLE)) {
 
@@ -140,7 +166,7 @@ public abstract class Data {
     /**
      * Extracts all the contacts from the database and stores them into a static ObservableArrayList
      */
-    public static void getAllContacts() {
+    private static void getAllContacts() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + Contact.TABLE)) {
 
@@ -159,7 +185,7 @@ public abstract class Data {
     /**
      * Extracts all users from the database and stores them into a static ArrayList
      */
-    public static void getAllUsers() {
+    private static void getAllUsers() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT * FROM " + User.TABLE)) {
 
@@ -173,51 +199,6 @@ public abstract class Data {
             }
         } catch (SQLException e) {
             System.out.println("Failed to extract users: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Extracts a single homeowner from the database
-     *
-     * @param customerId The customer ID of the homeowner
-     * @return The homeowner
-     */
-    private static Homeowner getHomeowner(int customerId) {
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID +
-                     "=" + customerId)) {
-
-            Homeowner homeowner = new Homeowner();
-            homeowner.setDoors(results.getInt(Homeowner.DOORS));
-            homeowner.setWindows(results.getInt(Homeowner.WINDOWS));
-            homeowner.setRooms(results.getInt(Homeowner.ROOMS));
-            homeowner.setYearBuilt(results.getInt(Homeowner.YEAR_BUILT));
-            return homeowner;
-        } catch (SQLException e) {
-            System.out.println("Failed to extract homeowner: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Extracts a single apartment from the database
-     *
-     * @param customerId The customer ID of the apartment
-     * @return The apartment
-     */
-    private static ApartmentManager getApartmentManager(int customerId) {
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery("SELECT * FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID +
-                     "=" + customerId)) {
-
-            ApartmentManager apartmentManager = new ApartmentManager();
-            apartmentManager.setBuildings(results.getInt(ApartmentManager.BUILDINGS));
-            apartmentManager.setUnits(results.getInt(ApartmentManager.UNITS));
-
-            return apartmentManager;
-        } catch (SQLException e) {
-            System.out.println("Failed to extract apartment: " + e.getMessage());
-            return null;
         }
     }
 
@@ -247,6 +228,51 @@ public abstract class Data {
     }
 
     /**
+     * Extracts a single homeowner from the database
+     *
+     * @param customerId The customer ID of the homeowner
+     * @return The homeowner
+     */
+    private static Homeowner getHomeowner(int customerId) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID +
+                     "=" + customerId)) {
+            results.next();
+            Homeowner homeowner = new Homeowner();
+            homeowner.setDoors(results.getInt(Homeowner.DOORS));
+            homeowner.setWindows(results.getInt(Homeowner.WINDOWS));
+            homeowner.setRooms(results.getInt(Homeowner.ROOMS));
+            homeowner.setYearBuilt(results.getInt(Homeowner.YEAR_BUILT));
+            return homeowner;
+        } catch (SQLException e) {
+            System.out.println("Failed to extract homeowner: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts a single apartment manager from the database
+     *
+     * @param customerId The customer ID of the apartment manager
+     * @return The apartment manager
+     */
+    private static ApartmentManager getApartmentManager(int customerId) {
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery("SELECT * FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID +
+                     "=" + customerId)) {
+            results.next();
+            ApartmentManager apartmentManager = new ApartmentManager();
+            apartmentManager.setBuildings(results.getInt(ApartmentManager.BUILDINGS));
+            apartmentManager.setUnits(results.getInt(ApartmentManager.UNITS));
+
+            return apartmentManager;
+        } catch (SQLException e) {
+            System.out.println("Failed to extract apartment manager: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Extracts a single division name from the first_level_division table in the database
      *
      * @param id The division ID to search with
@@ -272,9 +298,10 @@ public abstract class Data {
      * @return The division ID
      */
     public static int getDivisionId(String name) {
-        try (Statement statement = conn.createStatement();
-             ResultSet result = statement.executeQuery("SELECT " + Division.ID + " FROM " + Division.TABLE +
-                     " WHERE " + Division.NAME + "='" + name + "'")) {
+        try (
+                Statement statement = conn.createStatement();
+                ResultSet result = statement.executeQuery("SELECT " + Division.ID + " FROM " + Division.TABLE +
+                        " WHERE " + Division.NAME + "='" + name + "'")) {
 
             result.next();
             return result.getInt(1);
@@ -325,7 +352,7 @@ public abstract class Data {
      * @param name The contact name to be searched with
      * @return The contact ID
      */
-    public static int getContactID(String name) {
+    public static int getContactId(String name) {
         for (Contact contact : contactList) {
             if (contact.getName().equals(name)) {
                 return contact.getId();
@@ -340,7 +367,7 @@ public abstract class Data {
      * @param name The contact name to be searched with
      * @return The contact ID
      */
-    public static int getCustomerID(String name) {
+    public static int getCustomerId(String name) {
         for (Customer customer : customerList) {
             if (customer.getName().equals(name)) {
                 return customer.getId();
@@ -355,7 +382,7 @@ public abstract class Data {
      * @param customer The new customer to be added
      * @return True if successful and false if not
      */
-    public static boolean newCustomer(Customer customer) {
+    private static boolean newCustomer(Customer customer) {
         try {
             Statement statement = conn.createStatement();
             String currentUser = Main.currentUser.getUserName();
@@ -438,13 +465,13 @@ public abstract class Data {
      * @param customer The edited customer information to be updated
      * @return True if successful and false if not
      */
-    public static boolean editCustomer(Customer customer) {
+    private static boolean editCustomer(Customer customer) {
         try {
             Statement statement = conn.createStatement();
             statement.execute("UPDATE " + Customer.TABLE + " SET " + Customer.NAME + "='" + customer.getName() +
                     "', " + Customer.ADDRESS + "='" + customer.getAddress() + "', " + Customer.POSTAL_CODE +
                     "='" + customer.getPostalCode() + "', " + Customer.PHONE + "='" + customer.getPhone() + "', " +
-                    Customer.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Customer.LAST_UPDATED_BY +
+                    Customer.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Customer.LAST_UPDATED_BY +
                     "='" + Main.currentUser.getUserName() + "', " + Customer.DIVISION_ID + "="
                     + customer.getDivisionId() + " WHERE " + Customer.ID + "=" + customer.getId());
             return true;
@@ -468,7 +495,7 @@ public abstract class Data {
                 statement.execute("UPDATE " + Homeowner.TABLE + " SET " + Homeowner.YEAR_BUILT + "=" + ((Homeowner) customer).getYearBuilt() +
                         ", " + Homeowner.WINDOWS + "=" + ((Homeowner) customer).getWindows() + ", " + Homeowner.DOORS + "=" +
                         ((Homeowner) customer).getDoors() + ", " + Homeowner.ROOMS + "=" + ((Homeowner) customer).getRooms() + ", " +
-                        Homeowner.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Homeowner.LAST_UPDATED_BY +
+                        Homeowner.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Homeowner.LAST_UPDATED_BY +
                         "='" + Main.currentUser.getUserName() + "' WHERE " + Homeowner.ID + "=" + customer.getId());
 
                 customerList.clear();
@@ -495,7 +522,7 @@ public abstract class Data {
             if (editCustomer(customer)) {
                 statement.execute("UPDATE " + ApartmentManager.TABLE + " SET " + ApartmentManager.UNITS + "=" + ((ApartmentManager) customer).getUnits() +
                         ", " + ApartmentManager.BUILDINGS + "=" + ((ApartmentManager) customer).getBuildings() + ", " + ApartmentManager.LAST_UPDATE +
-                        "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + ApartmentManager.LAST_UPDATED_BY +
+                        "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + ApartmentManager.LAST_UPDATED_BY +
                         "='" + Main.currentUser.getUserName() + "' WHERE " + ApartmentManager.ID + "=" + customer.getId());
 
                 customerList.clear();
@@ -515,7 +542,7 @@ public abstract class Data {
      * @param customer The customer to be deleted
      * @return True if successful and false if not
      */
-    public static boolean deleteCustomer(Customer customer) {
+    private static boolean deleteCustomer(Customer customer) {
         try {
             Statement statement = conn.createStatement();
             statement.execute("DELETE FROM " + Customer.TABLE + " WHERE " + Customer.ID + "=" + customer.getId());
@@ -528,22 +555,20 @@ public abstract class Data {
     }
 
     /**
-     * Deletes an existing customer from the data base, then deletes the homeowner if it was successful
+     * Deletes an existing homeowner from the database, then delete the associated customer
      * Clears the customerList and reloads it from the database
      *
      * @param customer The homeowner to be deleted
-     * @return True is successul and false if not
+     * @return True is successful and false if not
      */
     public static boolean deleteHomeowner(Customer customer) {
         try {
-            if (deleteCustomer(customer)) {
-                Statement statement = conn.createStatement();
-                statement.execute("DELETE FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID + "=" + customer.getId());
-                customerList.clear();
-                getAllCustomers();
-                return true;
-            }
-            return false;
+            Statement statement = conn.createStatement();
+            statement.execute("DELETE FROM " + Homeowner.TABLE + " WHERE " + Homeowner.ID + "=" + customer.getId());
+            deleteCustomer(customer);
+            customerList.clear();
+            getAllCustomers();
+            return true;
         } catch (SQLException e) {
             System.out.println("Failed to delete homeowner: " + e.getMessage());
             return false;
@@ -551,22 +576,20 @@ public abstract class Data {
     }
 
     /**
-     * Deletes an existing customer from the data base, then deletes the apartment manager if it was successful
+     * Deletes an existing apartment manager from the database, then delete the associated customer
      * Clears the customerList and reloads it from the database
      *
      * @param customer The apartment manager to be deleted
-     * @return True is successul and false if not
+     * @return True is successful and false if not
      */
     public static boolean deleteApartmentManager(Customer customer) {
         try {
-            if (deleteCustomer(customer)) {
-                Statement statement = conn.createStatement();
-                statement.execute("DELETE FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID + "=" + customer.getId());
-                customerList.clear();
-                getAllCustomers();
-                return true;
-            }
-            return false;
+            Statement statement = conn.createStatement();
+            statement.execute("DELETE FROM " + ApartmentManager.TABLE + " WHERE " + ApartmentManager.ID + "=" + customer.getId());
+            deleteCustomer(customer);
+            customerList.clear();
+            getAllCustomers();
+            return true;
         } catch (SQLException e) {
             System.out.println("Failed to delete apartment manager: " + e.getMessage());
             return false;
@@ -589,8 +612,8 @@ public abstract class Data {
                     Appointment.START + ", " + Appointment.END + ", " + Appointment.CREATED_BY + ", " + Appointment.LAST_UPDATED_BY +
                     ", " + Appointment.CUSTOMER_ID + ", " + Appointment.USER_ID + ", " + Appointment.CONTACT_ID + ") VALUES(" +
                     appointment.getId() + ", '" + appointment.getTitle() + "', '" + appointment.getDescription() + "', '" +
-                    appointment.getLocation() + "', '" + appointment.getType() + "', '" + formatter.format(appointment.getStart()) + "', '" +
-                    formatter.format(appointment.getEnd()) + "', '" + currentUser + "', '" + currentUser + "', " + appointment.getCustomerId() +
+                    appointment.getLocation() + "', '" + appointment.getType() + "', '" + appointment.getStart() + "', '" +
+                    appointment.getEnd() + "', '" + currentUser + "', '" + currentUser + "', " + appointment.getCustomerId() +
                     ", " + appointment.getUserId() + ", " + appointment.getContactId() + ")");
 
             appointmentList.clear();
@@ -614,8 +637,8 @@ public abstract class Data {
             statement.execute("UPDATE " + Appointment.TABLE + " SET " + Appointment.TITLE + "='" + appointment.getTitle() +
                     "', " + Appointment.DESCRIPTION + "='" + appointment.getDescription() + "', " + Appointment.LOCATION +
                     "='" + appointment.getLocation() + "', " + Appointment.TYPE + "='" + appointment.getType() + "', " +
-                    Appointment.START + "='" + formatter.format(appointment.getStart()) + "', " + Appointment.END + "='" + formatter.format(appointment.getEnd()) +
-                    "', " + Appointment.LAST_UPDATE + "='" + formatter.format(LocalDateTime.now(ZoneOffset.UTC)) + "', " + Appointment.LAST_UPDATED_BY +
+                    Appointment.START + "='" + appointment.getStart() + "', " + Appointment.END + "='" + appointment.getEnd() +
+                    "', " + Appointment.LAST_UPDATE + "='" + LocalDateTime.now(ZoneOffset.UTC) + "', " + Appointment.LAST_UPDATED_BY +
                     "='" + Main.currentUser.getUserName() + "', " + Appointment.CUSTOMER_ID + "=" + appointment.getCustomerId() +
                     ", " + Appointment.CONTACT_ID + "=" + appointment.getContactId() + ", " + Appointment.USER_ID + "=" +
                     appointment.getUserId() + " WHERE " + Appointment.ID + "=" + appointment.getId());
@@ -652,14 +675,14 @@ public abstract class Data {
     /**
      * Checks if any customer is related to an appointment
      *
-     * @param customerID The customer ID to check against all appointments
+     * @param customerId The customer ID to check against all appointments
      * @return True if there are no matches and false if there are matches or there is an error
      */
-    public static boolean safeToDelete(int customerID) {
+    public static boolean safeToDelete(int customerId) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + Appointment.TABLE + " appts INNER JOIN " +
                      Customer.TABLE + " custs ON appts." + Customer.ID + " = custs." + Customer.ID +
-                     " WHERE custs." + Customer.ID + "=" + customerID)) {
+                     " WHERE custs." + Customer.ID + "=" + customerId)) {
 
             results.next();
             if (results.getInt(1) == 0) {
@@ -674,16 +697,16 @@ public abstract class Data {
     /**
      * Extracts all appointments for a specified customer
      *
-     * @param customerID The customer ID to search with
+     * @param customerId The customer ID to search with
      * @return ObservableArrayList of appointments
      */
-    public static ObservableList<Appointment> getAppointmentsForCustomer(int customerID) {
+    public static ObservableList<Appointment> getAppointmentsForCustomer(int customerId) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.TITLE + ", " +
                      Appointment.DESCRIPTION + ", appts." + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
                      ", " + Appointment.CONTACT_ID + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE +
                      " custs ON appts." + Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." +
-                     Customer.ID + "=" + customerID)) {
+                     Customer.ID + "=" + customerId)) {
 
             ObservableList<Appointment> appointments = FXCollections.observableArrayList();
             while (results.next()) {
@@ -692,8 +715,8 @@ public abstract class Data {
                 appointment.setTitle(results.getString(Appointment.TITLE));
                 appointment.setDescription(results.getString(Appointment.DESCRIPTION));
                 appointment.setType(results.getString(Appointment.TYPE));
-                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
-                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
                 appointment.setContactId(results.getInt(Appointment.CONTACT_ID));
 
                 appointments.add(appointment);
@@ -708,21 +731,21 @@ public abstract class Data {
     /**
      * Extracts all appointment times for a specified customer
      *
-     * @param customerID The customer ID to search with
+     * @param customerId The customer ID to search with
      * @return ArrayList of appointments that only has values for title, start, and end
      */
-    public static ArrayList<Appointment> getAppointmentDatesForCustomer(int customerID) {
+    public static ArrayList<Appointment> getAppointmentDatesForCustomer(int customerId) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.TITLE + ", " + Appointment.START + ", " +
                      Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Customer.TABLE + " custs ON appts." +
-                     Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." + Customer.ID + "=" + customerID)) {
+                     Appointment.CUSTOMER_ID + " = custs." + Customer.ID + " WHERE custs." + Customer.ID + "=" + customerId)) {
 
             ArrayList<Appointment> appointments = new ArrayList<>();
             while (results.next()) {
                 Appointment appointment = new Appointment();
                 appointment.setTitle(results.getString(Appointment.TITLE));
-                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
-                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
                 appointments.add(appointment);
             }
             return appointments;
@@ -736,21 +759,21 @@ public abstract class Data {
     /**
      * Extracts all appointment times for a specified user
      *
-     * @param userID The user ID to search with
+     * @param userId The user ID to search with
      * @return ArrayList of appointments that only has values for title and start
      */
-    public static ArrayList<Appointment> getAppointmentDatesForUser(int userID) {
+    public static ArrayList<Appointment> getAppointmentDatesForUser(int userId) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.START + ", " +
                      Appointment.END + " FROM " + Appointment.TABLE + " appts INNER JOIN " + User.TABLE + " user ON appts." +
-                     Appointment.USER_ID + " = user." + User.ID + " WHERE user." + User.ID + "=" + userID)) {
+                     Appointment.USER_ID + " = user." + User.ID + " WHERE user." + User.ID + "=" + userId)) {
 
             ArrayList<Appointment> appointments = new ArrayList<>();
             while (results.next()) {
                 Appointment appointment = new Appointment();
                 appointment.setId(results.getInt(Appointment.ID));
-                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
-                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
                 appointments.add(appointment);
             }
             return appointments;
@@ -763,16 +786,16 @@ public abstract class Data {
     /**
      * Extracts all appointments for a specified contact
      *
-     * @param contactID The contact ID to search with
+     * @param contactId The contact ID to search with
      * @return ArrayList of appointments
      */
-    public static ObservableList<Appointment> getAppointmentsForContact(int contactID) {
+    public static ObservableList<Appointment> getAppointmentsForContact(int contactId) {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT " + Appointment.ID + ", " + Appointment.TITLE + ", " +
                      Appointment.DESCRIPTION + ", " + Appointment.TYPE + ", " + Appointment.START + ", " + Appointment.END +
                      ", " + Appointment.CUSTOMER_ID + " FROM " + Appointment.TABLE + " appts INNER JOIN " + Contact.TABLE +
                      " contact ON appts." + Appointment.CONTACT_ID + " = contact." + Contact.ID + " WHERE contact." +
-                     Contact.ID + "=" + contactID)) {
+                     Contact.ID + "=" + contactId)) {
 
             ObservableList<Appointment> appointments = FXCollections.observableArrayList();
             while (results.next()) {
@@ -781,8 +804,8 @@ public abstract class Data {
                 appointment.setTitle(results.getString(Appointment.TITLE));
                 appointment.setDescription(results.getString(Appointment.DESCRIPTION));
                 appointment.setType(results.getString(Appointment.TYPE));
-                appointment.setStart(Timestamp.valueOf(results.getString(Appointment.START)));
-                appointment.setEnd(Timestamp.valueOf(results.getString(Appointment.END)));
+                appointment.setStart(results.getTimestamp(Appointment.START));
+                appointment.setEnd(results.getTimestamp(Appointment.END));
                 appointment.setCustomerId(results.getInt(Appointment.CUSTOMER_ID));
 
                 appointments.add(appointment);

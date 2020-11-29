@@ -1,4 +1,4 @@
-package dweller;
+package scheduler;
 
 import data.Data;
 import data.User;

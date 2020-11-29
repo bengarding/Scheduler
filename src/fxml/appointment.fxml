@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
             prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dweller.AppointmentController">
+            fx:controller="scheduler.AppointmentController">
    <top>
       <Label text="Create New Appointment" BorderPane.alignment="TOP_LEFT">
          <font>
@@ -219,7 +208,7 @@
                      <Insets/>
                   </GridPane.margin>
                </Label>
-               <Label fx:id="startTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+               <Label fx:id="startTimeOutsideHoursError" text="Must be between 07-18 PST" textFill="RED"
                       visible="false"/>
                <Label fx:id="selectStartDateError" prefHeight="25.0" text="Select a date" textFill="RED"
                       visible="false"/>
@@ -247,7 +236,7 @@
                      <Insets/>
                   </GridPane.margin>
                </Label>
-               <Label fx:id="endTimeOutsideHoursError" text="Must be between 08-22 EST" textFill="RED"
+               <Label fx:id="endTimeOutsideHoursError" text="Must be between 07-18 PST" textFill="RED"
                       visible="false"/>
                <Label fx:id="selectEndDateError" text="Select a date" textFill="RED" visible="false"/>
                <Label fx:id="endTimeAfterStartError" text="Must be after start time" textFill="RED" visible="false"/>

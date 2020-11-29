@@ -1,4 +1,4 @@
-package dweller;
+package scheduler;
 
 import data.Appointment;
 import data.Contact;
@@ -36,7 +36,7 @@ public class ContactReportController {
         contactBox.setItems(contactList);
         contactBox.setValue(contactList.get(0));
 
-        appointmentTable.setItems(Data.getAppointmentsForContact(Data.getContactID(contactBox.getValue())));
+        appointmentTable.setItems(Data.getAppointmentsForContact(Data.getContactId(contactBox.getValue())));
     }
 
     /**
@@ -45,7 +45,7 @@ public class ContactReportController {
      */
     @FXML
     private void updateTable() {
-        appointmentTable.setItems(Data.getAppointmentsForContact(Data.getContactID(contactBox.getValue())));
+        appointmentTable.setItems(Data.getAppointmentsForContact(Data.getContactId(contactBox.getValue())));
     }
 
     /**

@@ -1,4 +1,4 @@
-package dweller;
+package scheduler;
 
 import data.Appointment;
 import data.Data;
@@ -28,27 +28,23 @@ public class LoginController {
     @FXML
     private Label error;
     @FXML
-    private Label loc;
-    @FXML
     private Button submitButton;
     @FXML
     private Button exitButton;
     @FXML
-    private TextField usernameField;
+    public TextField usernameField;
     @FXML
-    private PasswordField passwordField;
+    public PasswordField passwordField;
 
     /**
      * If the Locale is set to French, everything is translated into French, including all error messages.
      */
     public void initialize() {
-//        username.setText(Main.language.getString("username"));
-//        password.setText(Main.language.getString("password"));
-//        error.setText(Main.language.getString("error"));
-//        loc.setText(Main.language.getString("location"));
-//        submitButton.setText(Main.language.getString("submit"));
-//        exitButton.setText(Main.language.getString("exit"));
-//        loc.setText(loc.getText().concat(Locale.getDefault().getDisplayCountry()));
+        username.setText(Main.language.getString("username"));
+        password.setText(Main.language.getString("password"));
+        error.setText(Main.language.getString("error"));
+        submitButton.setText(Main.language.getString("submit"));
+        exitButton.setText(Main.language.getString("exit"));
     }
 
     /**
@@ -57,9 +53,9 @@ public class LoginController {
      * Otherwise, an error message is displayed.
      */
     @FXML
-    private void submit() {
+    public boolean submit() {
         for (User user : Data.userList) {
-            if (user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText())) {
+            if (validate(user)) {
                 Main.currentUser = user;
 
                 try {
@@ -67,7 +63,7 @@ public class LoginController {
                     fxmlLoader.setLocation(getClass().getResource("/fxml/main.fxml"));
                     Scene scene = new Scene(fxmlLoader.load());
                     Stage stage = new Stage();
-                    stage.setTitle("Dweller");
+                    stage.setTitle("Scheduler");
                     stage.setScene(scene);
                     stage.show();
 
@@ -94,7 +90,7 @@ public class LoginController {
                         Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("no_upcoming_appointments"),
                                 Main.language.getString("no_upcoming_appointments_message"));
                     }
-                    return;
+                    return true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -102,12 +98,17 @@ public class LoginController {
                 error.setVisible(true);
                 String message = Main.language.getString("incorrect_password_for") + " " + usernameField.getText();
                 Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("incorrect_password"), message);
-                return;
+                return false;
             }
         }
         String message = Main.language.getString("username") + " '" + usernameField.getText() + "' " +
                 Main.language.getString("not_found") + ".";
         Main.showAlert(Alert.AlertType.INFORMATION, Main.language.getString("user_not_found"), message);
+        return false;
+    }
+
+    public boolean validate(User user) {
+        return user.getUserName().equals(usernameField.getText()) && user.getPassword().equals(passwordField.getText());
     }
 
     /**
@@ -117,4 +118,5 @@ public class LoginController {
     private void exit() {
         Platform.exit();
     }
+
 }

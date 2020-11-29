@@ -1,4 +1,4 @@
-package dweller;
+package scheduler;
 
 import data.*;
 import javafx.collections.FXCollections;
@@ -93,10 +93,10 @@ public class AppointmentController {
     boolean userIDExists;
     boolean appointmentEdit = false;
 
-    private final LocalTime endTimeEST = LocalTime.of(22, 1);
-    private final LocalTime startTimeEST = LocalTime.of(7, 59);
+    private final LocalTime endTimePST = LocalTime.of(18, 1);
+    private final LocalTime startTimePST = LocalTime.of(6, 59);
     private final ZoneId utcZone = ZoneId.of("UTC");
-    private final ZoneId estZone = ZoneId.of("US/Eastern");
+    private final ZoneId pstZone = ZoneId.of("US/Pacific");
     private final ZoneId localZone = ZoneId.of(TimeZone.getDefault().getID());
 
 
@@ -108,6 +108,7 @@ public class AppointmentController {
      *
      */
     public void initialize() {
+        userIDField.setText(String.valueOf(Main.currentUser.getId()));
         ObservableList<String> contactList = FXCollections.observableArrayList();
         for (Contact contact : Data.contactList) {
             contactList.add(contact.getName());
@@ -192,7 +193,7 @@ public class AppointmentController {
     }
 
     /**
-     * Performs validation checks for the start time entered. Validates for proper format and if it's within EST business hours
+     * Performs validation checks for the start time entered. Validates for proper format and if it's within PST business hours
      *
      * @return True if valid and false if invalid
      */
@@ -210,8 +211,8 @@ public class AppointmentController {
         }
         startDateError.setVisible(false);
 
-        Instant allowedStartTime = ZonedDateTime.of(startDatePicked, startTimeEST, estZone).toInstant();
-        Instant allowedEndTime = ZonedDateTime.of(startDatePicked, endTimeEST, estZone).toInstant();
+        Instant allowedStartTime = ZonedDateTime.of(startDatePicked, startTimePST, pstZone).toInstant();
+        Instant allowedEndTime = ZonedDateTime.of(startDatePicked, endTimePST, pstZone).toInstant();
 
         if (startTimeField.getText().length() != 5) {
             startTimePicked = ZonedDateTime.of(startDatePicked, LocalTime.parse("0" + startTimeField.getText()), localZone).toInstant();
@@ -241,7 +242,7 @@ public class AppointmentController {
     }
 
     /**
-     * Performs validation checks for the end time entered. Validates for proper format, if it's within EST business
+     * Performs validation checks for the end time entered. Validates for proper format, if it's within PST business
      * hours, and if there are any conflicting appointments for the customer ID entered.
      *
      * @return True if valid and false if invalid
@@ -258,8 +259,8 @@ public class AppointmentController {
         }
         endDateError.setVisible(false);
 
-        Instant allowedStartTime = ZonedDateTime.of(endDatePicked, startTimeEST, estZone).toInstant();
-        Instant allowedEndTime = ZonedDateTime.of(endDatePicked, endTimeEST, estZone).toInstant();
+        Instant allowedStartTime = ZonedDateTime.of(endDatePicked, startTimePST, pstZone).toInstant();
+        Instant allowedEndTime = ZonedDateTime.of(endDatePicked, endTimePST, pstZone).toInstant();
 
         if (endTimeField.getText().length() != 5) {
             endTimePicked = ZonedDateTime.of(endDatePicked, LocalTime.parse("0" + endTimeField.getText()), localZone).toInstant();
@@ -314,13 +315,13 @@ public class AppointmentController {
     }
 
     /**
-     * Displays a custom alert if the entered start or end times are outside of EST business hours. The acceptable
+     * Displays a custom alert if the entered start or end times are outside of PST business hours. The acceptable
      * business hours are also shown in local time.
      */
     private void outsideHours() {
-        String message = "You have selected a time that is outside of normal business hours: 8:00-22:00 EST. The business hours in your " +
-                "time zone are " + ZonedDateTime.of(LocalDate.now(), startTimeEST.plusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
-                "-" + ZonedDateTime.of(LocalDate.now(), endTimeEST.minusMinutes(1), estZone).toInstant().atZone(localZone).toLocalTime() +
+        String message = "You have selected a time that is outside of normal business hours: 7:00-18:00 PST. The business hours in your " +
+                "time zone are " + ZonedDateTime.of(LocalDate.now(), startTimePST.plusMinutes(1), pstZone).toInstant().atZone(localZone).toLocalTime() +
+                "-" + ZonedDateTime.of(LocalDate.now(), endTimePST.minusMinutes(1), pstZone).toInstant().atZone(localZone).toLocalTime() +
                 " " + ZonedDateTime.now().format(Main.zoneFormatter);
         Main.showAlert(Alert.AlertType.INFORMATION, "Outside Business Hours", message);
     }
