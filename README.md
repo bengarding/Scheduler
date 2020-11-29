@@ -13,7 +13,7 @@ Contact: bengarding@gmail.com
 
 Version: 1.0
 
-Date: 11-5-2020
+Date: 11-28-2020
 
 
 ## Built With
@@ -41,3 +41,5 @@ You can also view appointments for a given customer or contact.
 <li> The appointments can be viewed by month or week, depending on which radio button
 is pressed.
 <li> The customer view contains a search bar to search for customers by name
+<li> The IDs for both customers and appointments are auto-generated and cannot be edited from the GUI
+<li> Verification is in place throughout the application to ensure data integrity
